@@ -10,6 +10,8 @@ from sklearn.neighbors import KernelDensity
 from sklearn.experimental import enable_iterative_imputer  # noqa
 from sklearn.impute import IterativeImputer
 
+import pympute
+dirname = os.path.dirname(ahunt.__file__)
 
 st.sidebar.title('Data imputation tool.')
 st.sidebar.image(os.path.join(dirname,'media/logo.png'), use_column_width=True)
