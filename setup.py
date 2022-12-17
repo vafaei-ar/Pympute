@@ -31,7 +31,7 @@ setup(
     include_package_data=True,
     package_data={'': ['media/*']},
     scripts=[
-            "scripts/ahunt",
+            "scripts/pympute",
         ],
     install_requires=requires,
     license='MIT',
