@@ -1,0 +1,44 @@
+#! env python
+# -*- coding: utf-8 -*-
+
+import os
+import re
+import sys
+from streamlit.web.cli import main
+import pympute
+
+dirname = path = os.path.dirname(pympute.__file__)
+
+if len(sys.argv)==2:
+    port = int(sys.argv[1])
+else:
+    port = 8501
+
+filename = os.path.join(dirname, 'app.py')
+
+if __name__ == '__main__':
+    sys.argv = ["streamlit", "run", filename, "--server.port", str(port), "server.headless", "True"]
+    sys.exit(main())
+
+
+
+# if __name__ == '__main__':
+#     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+#     sys.exit(main())
+
+# import os
+# import streamlit #.bootstrap
+# from streamlit import config as _config
+# import ssaip
+
+# dirname = ssaip.__file__
+
+# dirname = os.path.dirname(__file__)
+# filename = os.path.join(dirname, 'app.py')
+
+# _config.set_option("server.port", 8501)
+# _config.set_option("server.headless", True)
+# args = []
+
+# streamlit.cli.main_run(filename, args)
+# streamlit.bootstrap.run(filename,'',args)
