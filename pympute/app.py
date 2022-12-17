@@ -60,6 +60,14 @@ st.sidebar.image(os.path.join(dirname,'media/logo.png'), use_column_width=True)
 
 
 #st.title("Hello world!")
+
+
+def color_cells(s):
+    if np.isnan(s):
+        return 'color:{0}; font-weight:bold'.format('green')
+    else:
+        return ''
+
 uploaded_file = st.file_uploader("Please choose a csv file.")
 done = False
 if uploaded_file is not None:
@@ -115,7 +123,7 @@ if uploaded_file is not None:
         dfi = df+0
         dfi.loc[:,:] = imputed_data
         st.success('Done!')
-        col1, col2 = st.beta_columns(2)
+        col1, col2 = st.columns(2)
         col1.write('original data')
         col1.write(df.style.highlight_null(null_color='red'))
         col2.write('imputed data')
@@ -214,11 +222,7 @@ def get_table_download_link_csv(df,fname):
     href = f'<a href="data:file/csv;base64,{b64}" download="imputed.csv" target="_blank">Download</a>'#.format(fname)
     return href
 
-def color_cells(s):
-    if np.isnan(s):
-        return 'color:{0}; font-weight:bold'.format('green')
-    else:
-        return ''
+
 
 
 
