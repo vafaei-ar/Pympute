@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pylab as plt
 import pickle
-import pyreadr
+#import pyreadr
 import tempfile
 import pandas as pd
 import sklearn as sk
@@ -15,18 +15,18 @@ from sklearn.metrics import r2_score
 import matplotlib.patches as mpatches
 from sklearn.neighbors import KernelDensity
 
-def data_load(prefix='data/',i=0,part = '1st'):
-    frame = {'data':[],'masked':[]}
-    template = 'dffinal_repeat_select_widformat_t{}_{}{}.RData'
-    for typ in ['','masked_']:
-        fname = template.format(i,typ,part)
-        result = pyreadr.read_r(prefix+fname)
-        key = list(result.keys())[0]
-        if typ=='':
-            frame['data'] = result[key]
-        else:
-            frame['masked'] = result[key]
-    return frame
+#def data_load(prefix='data/',i=0,part = '1st'):
+#    frame = {'data':[],'masked':[]}
+#    template = 'dffinal_repeat_select_widformat_t{}_{}{}.RData'
+#    for typ in ['','masked_']:
+#        fname = template.format(i,typ,part)
+#        result = pyreadr.read_r(prefix+fname)
+#        key = list(result.keys())[0]
+#        if typ=='':
+#            frame['data'] = result[key]
+#        else:
+#            frame['masked'] = result[key]
+#    return frame
 
 def get_range(xx):
     xmin = xx.min()#np.nanmin(xx,axis=0,keepdims=1)
