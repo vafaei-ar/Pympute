@@ -68,6 +68,47 @@ def color_cells(s):
     else:
         return ''
 
+def get_table_download_link_csv(df,fname):
+    #csv = df.to_csv(index=False)
+    csv = df.to_csv().encode()
+    #b64 = base64.b64encode(csv.encode()).decode() 
+    b64 = base64.b64encode(csv).decode()
+    href = f'<a href="data:file/csv;base64,{b64}" download="imputed.csv" target="_blank">Download</a>'#.format(fname)
+    return href
+
+def mykde(x,
+          cl = None,
+          color = 'b',
+          alpha = 0.3,
+          kernel = 'gaussian',
+          bandwidth = 0.2,
+          ax = None):
+
+    if ax is None:
+        fig, ax = plt.subplots(1,1,figsize=(8,5))
+    x = x.reshape(-1, 1)
+    xx = np.linspace(x.min(),x.max(), 100)[:, None]
+
+    # kdep = sns.kdeplot(gd, color='b',n_levels=[0.2,0.8], shade=True, ax=ax)
+    kde = KernelDensity(kernel=kernel, bandwidth=bandwidth).fit(x)
+    kdep = kde.score_samples(xx)
+
+    def estimate(x):
+        return np.exp(kde.score_samples(np.array([x])[:, None]))
+
+    ax.plot(xx,np.exp(kdep),color=color,lw=0.8)
+    if cl is not None:
+        dcl = 100-cl
+        lower = np.percentile(x[:,0],dcl/2)
+        upper = np.percentile(x[:,0],100-dcl/2)
+        xx = xx[:,0]
+        ax.fill_between(xx,xx-xx,np.exp(kdep),alpha=alpha,color=color)
+        ax.plot(2*[lower],[0,estimate(lower)[0]],color=color)
+        ax.plot(2*[upper],[0,estimate(upper)[0]],color=color)
+        
+        return np.percentile(x[:,0],50),lower,upper
+
+
 uploaded_file = st.file_uploader("Please choose a csv file.")
 done = False
 if uploaded_file is not None:
@@ -214,49 +255,6 @@ if done:
 #    st.write('{}%'.format((percent_complete+1)/100))
 
 
-def get_table_download_link_csv(df,fname):
-    #csv = df.to_csv(index=False)
-    csv = df.to_csv().encode()
-    #b64 = base64.b64encode(csv.encode()).decode() 
-    b64 = base64.b64encode(csv).decode()
-    href = f'<a href="data:file/csv;base64,{b64}" download="imputed.csv" target="_blank">Download</a>'#.format(fname)
-    return href
-
-
-
-
-
-def mykde(x,
-          cl = None,
-          color = 'b',
-          alpha = 0.3,
-          kernel = 'gaussian',
-          bandwidth = 0.2,
-          ax = None):
-
-    if ax is None:
-        fig, ax = plt.subplots(1,1,figsize=(8,5))
-    x = x.reshape(-1, 1)
-    xx = np.linspace(x.min(),x.max(), 100)[:, None]
-
-    # kdep = sns.kdeplot(gd, color='b',n_levels=[0.2,0.8], shade=True, ax=ax)
-    kde = KernelDensity(kernel=kernel, bandwidth=bandwidth).fit(x)
-    kdep = kde.score_samples(xx)
-
-    def estimate(x):
-        return np.exp(kde.score_samples(np.array([x])[:, None]))
-
-    ax.plot(xx,np.exp(kdep),color=color,lw=0.8)
-    if cl is not None:
-        dcl = 100-cl
-        lower = np.percentile(x[:,0],dcl/2)
-        upper = np.percentile(x[:,0],100-dcl/2)
-        xx = xx[:,0]
-        ax.fill_between(xx,xx-xx,np.exp(kdep),alpha=alpha,color=color)
-        ax.plot(2*[lower],[0,estimate(lower)[0]],color=color)
-        ax.plot(2*[upper],[0,estimate(upper)[0]],color=color)
-        
-        return np.percentile(x[:,0],50),lower,upper
 
 
 
