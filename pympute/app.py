@@ -11,7 +11,7 @@ from sklearn.experimental import enable_iterative_imputer  # noqa
 from sklearn.impute import IterativeImputer
 
 import pympute
-dirname = os.path.dirname(ahunt.__file__)
+dirname = os.path.dirname(pympute.__file__)
 
 st.sidebar.title('Data imputation tool.')
 st.sidebar.image(os.path.join(dirname,'media/logo.png'), use_column_width=True)
