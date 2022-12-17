@@ -9,93 +9,11 @@ from sklearn.neighbors import KernelDensity
 from sklearn.experimental import enable_iterative_imputer  # noqa
 from sklearn.impute import IterativeImputer
 
-#import cv2
-#from skimage.transform import resize
-#from tf_keras_vis.utils import normalize
-#from tf_keras_vis.gradcam import GradcamPlusPlus
-#from tf_keras_vis.scorecam import ScoreCAM
-#from utils import *
-#import models
+
+st.sidebar.title('Data imputation tool.')
+st.sidebar.image(os.path.join(dirname,'media/logo.png'), use_column_width=True)
 
 
-#progress_bar = st.sidebar.progress(0)
-#status_text = st.sidebar.empty()
-#last_rows = np.random.randn(1, 1)
-#chart = st.line_chart(last_rows)
-
-#for i in range(1, 101):
-#    new_rows = last_rows[-1, :] + np.random.randn(5, 1).cumsum(axis=0)
-##    status_text.text("%i%% Complete" % i)
-#    chart.add_rows(new_rows)
-##    progress_bar.progress(i)
-#    last_rows = new_rows
-#    time.sleep(0.05)
-
-##progress_bar.empty()
-
-## Streamlit widgets automatically run the script from top to bottom. Since
-## this button is not connected to any other logic, it just causes a plain
-## rerun.
-#st.button("Rerun!")
-
-#my_bar = st.progress(0)
-#for percent_complete in range(100):
-#    time.sleep(0.1)
-#    my_bar.progress(percent_complete + 1)
-#    st.write('{}%'.format((percent_complete+1)/100))
-
-
-def get_table_download_link_csv(df,fname):
-    #csv = df.to_csv(index=False)
-    csv = df.to_csv().encode()
-    #b64 = base64.b64encode(csv.encode()).decode() 
-    b64 = base64.b64encode(csv).decode()
-    href = f'<a href="data:file/csv;base64,{b64}" download="imputed.csv" target="_blank">Download</a>'#.format(fname)
-    return href
-
-def color_cells(s):
-    if np.isnan(s):
-        return 'color:{0}; font-weight:bold'.format('green')
-    else:
-        return ''
-
-
-
-def mykde(x,
-          cl = None,
-          color = 'b',
-          alpha = 0.3,
-          kernel = 'gaussian',
-          bandwidth = 0.2,
-          ax = None):
-
-    if ax is None:
-        fig, ax = plt.subplots(1,1,figsize=(8,5))
-    x = x.reshape(-1, 1)
-    xx = np.linspace(x.min(),x.max(), 100)[:, None]
-
-    # kdep = sns.kdeplot(gd, color='b',n_levels=[0.2,0.8], shade=True, ax=ax)
-    kde = KernelDensity(kernel=kernel, bandwidth=bandwidth).fit(x)
-    kdep = kde.score_samples(xx)
-
-    def estimate(x):
-        return np.exp(kde.score_samples(np.array([x])[:, None]))
-
-    ax.plot(xx,np.exp(kdep),color=color,lw=0.8)
-    if cl is not None:
-        dcl = 100-cl
-        lower = np.percentile(x[:,0],dcl/2)
-        upper = np.percentile(x[:,0],100-dcl/2)
-        xx = xx[:,0]
-        ax.fill_between(xx,xx-xx,np.exp(kdep),alpha=alpha,color=color)
-        ax.plot(2*[lower],[0,estimate(lower)[0]],color=color)
-        ax.plot(2*[upper],[0,estimate(upper)[0]],color=color)
-        
-        return np.percentile(x[:,0],50),lower,upper
-
-
-
-st.title('Data imputation application.')
 #mode = st.radio(
 #"Please choose the procedure:",
 #('Train a model', 'Predict with a model'))
@@ -246,6 +164,96 @@ if done:
 #elif mode == 'Predict with a model':
 #    st.subheader("You didn't select comedy.")
 #    predict()
+
+
+
+#import cv2
+#from skimage.transform import resize
+#from tf_keras_vis.utils import normalize
+#from tf_keras_vis.gradcam import GradcamPlusPlus
+#from tf_keras_vis.scorecam import ScoreCAM
+#from utils import *
+#import models
+
+
+#progress_bar = st.sidebar.progress(0)
+#status_text = st.sidebar.empty()
+#last_rows = np.random.randn(1, 1)
+#chart = st.line_chart(last_rows)
+
+#for i in range(1, 101):
+#    new_rows = last_rows[-1, :] + np.random.randn(5, 1).cumsum(axis=0)
+##    status_text.text("%i%% Complete" % i)
+#    chart.add_rows(new_rows)
+##    progress_bar.progress(i)
+#    last_rows = new_rows
+#    time.sleep(0.05)
+
+##progress_bar.empty()
+
+## Streamlit widgets automatically run the script from top to bottom. Since
+## this button is not connected to any other logic, it just causes a plain
+## rerun.
+#st.button("Rerun!")
+
+#my_bar = st.progress(0)
+#for percent_complete in range(100):
+#    time.sleep(0.1)
+#    my_bar.progress(percent_complete + 1)
+#    st.write('{}%'.format((percent_complete+1)/100))
+
+
+def get_table_download_link_csv(df,fname):
+    #csv = df.to_csv(index=False)
+    csv = df.to_csv().encode()
+    #b64 = base64.b64encode(csv.encode()).decode() 
+    b64 = base64.b64encode(csv).decode()
+    href = f'<a href="data:file/csv;base64,{b64}" download="imputed.csv" target="_blank">Download</a>'#.format(fname)
+    return href
+
+def color_cells(s):
+    if np.isnan(s):
+        return 'color:{0}; font-weight:bold'.format('green')
+    else:
+        return ''
+
+
+
+def mykde(x,
+          cl = None,
+          color = 'b',
+          alpha = 0.3,
+          kernel = 'gaussian',
+          bandwidth = 0.2,
+          ax = None):
+
+    if ax is None:
+        fig, ax = plt.subplots(1,1,figsize=(8,5))
+    x = x.reshape(-1, 1)
+    xx = np.linspace(x.min(),x.max(), 100)[:, None]
+
+    # kdep = sns.kdeplot(gd, color='b',n_levels=[0.2,0.8], shade=True, ax=ax)
+    kde = KernelDensity(kernel=kernel, bandwidth=bandwidth).fit(x)
+    kdep = kde.score_samples(xx)
+
+    def estimate(x):
+        return np.exp(kde.score_samples(np.array([x])[:, None]))
+
+    ax.plot(xx,np.exp(kdep),color=color,lw=0.8)
+    if cl is not None:
+        dcl = 100-cl
+        lower = np.percentile(x[:,0],dcl/2)
+        upper = np.percentile(x[:,0],100-dcl/2)
+        xx = xx[:,0]
+        ax.fill_between(xx,xx-xx,np.exp(kdep),alpha=alpha,color=color)
+        ax.plot(2*[lower],[0,estimate(lower)[0]],color=color)
+        ax.plot(2*[upper],[0,estimate(upper)[0]],color=color)
+        
+        return np.percentile(x[:,0],50),lower,upper
+
+
+
+
 
 
 
