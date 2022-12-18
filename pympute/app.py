@@ -145,7 +145,7 @@ if uploaded_file is not None:
     
     col1, col2 = st.columns(2)
     for col in session_state.cols:
-        col1.write(f'{col1:15.15}:')
+        col1.write(f'{col:15.15}:')
         session_state.models[col] = col2.selectbox(
             label = '',
             options = all_models,
