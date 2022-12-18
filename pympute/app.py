@@ -114,7 +114,7 @@ def mykde(x,
 from pympute import *
 from pathlib import Path
 
-devie = 'gpu'
+devie = 'cpu'
 
 if devie=='cpu':
     all_models = list(cpu_regressors_list().keys())+\
