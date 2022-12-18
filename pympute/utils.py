@@ -328,7 +328,7 @@ def gpu_classifiers_list():
            }
 
 class Imputer:
-    def __init__(self,data_frame,model,loss_f=None,fill_method='random',save_history=False,batch_input=False):
+    def __init__(self,data_frame,model,loss_f=None,fill_method='random',save_history=False,batch_input=False,st=None):
         self.data_frame = data_frame
         self.disna = data_frame.isna()
         
@@ -351,6 +351,7 @@ class Imputer:
         self.save_history = save_history
         self.batch_input = batch_input
         self.history = 0
+        self.st = st
         if self.save_history:
             self.history = {i:[] for i in self.cols}
         
@@ -385,11 +386,22 @@ class Imputer:
     
         ilf = self.loss_frame.shape[0]
         
-        pbar = tqdm(total=n_it*len(inds), position=0, leave=True)
+        nprog = n_it*len(inds)
+        pbar = tqdm(total=nprog, position=0, leave=True)
+        if self.st:
+            progress_bar = self.st.sidebar.progress(0)
+            status_text = self.st.sidebar.empty()
+            iprog = 0
+            progress_bar.progress(iprog)
+            status_text.text(f'Imputation... {iprog:4.2f}% complete.')
         
         for i in range(n_it):
             for j in range(len(inds)):
                 pbar.update(1)
+                if self.st:
+                    iprog = iprog+1
+                    progress_bar.progress((iprog+1)/nprog)
+                    status_text.text(f'Imputation... {100*(iprog+1)/nprog:4.2f}% complete.')
 
                 col = self.imp_cols[inds[j]]
                 fisna = self.disna[col]
@@ -431,6 +443,7 @@ class Imputer:
                 if self.save_history:
                     self.history[col].append(pred)
         pbar.close()
+        if self.st: progress_bar.progress(100)
 
     def plot_loss_frame(self,ax=None):
         if ax is None:
