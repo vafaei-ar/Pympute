@@ -183,7 +183,8 @@ if uploaded_file is not None:
         imputed_data = imp.data_frame
         done = True
         
-        df = reset_range(df,normin,normax)
+#        df = reset_range(df,normin,normax)
+        df = pd.read_csv(uploaded_file)
         imputed_data = reset_range(imputed_data,normin,normax)
         
         
