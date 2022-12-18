@@ -389,8 +389,8 @@ class Imputer:
         nprog = n_it*len(inds)
         pbar = tqdm(total=nprog, position=0, leave=True)
         if self.st:
-            progress_bar = self.st.sidebar.progress(0)
-            status_text = self.st.sidebar.empty()
+            progress_bar = self.st.progress(0)
+            status_text = self.st.empty()
             iprog = 0
             progress_bar.progress(iprog)
             status_text.text(f'Imputation... {iprog:4.2f}% complete.')
@@ -400,7 +400,7 @@ class Imputer:
                 pbar.update(1)
                 if self.st:
                     iprog = iprog+1
-                    progress_bar.progress((iprog+1)/nprog)
+                    progress_bar.progress(iprog/nprog)
                     status_text.text(f'Imputation... {100*(iprog+1)/nprog:4.2f}% complete.')
 
                 col = self.imp_cols[inds[j]]
@@ -693,8 +693,8 @@ try:
             nprog = n_it*len(inds)
             pbar = tqdm(total=nprog, position=0, leave=True)
             if self.st:
-                progress_bar = self.st.sidebar.progress(0)
-                status_text = self.st.sidebar.empty()
+                progress_bar = self.st.progress(0)
+                status_text = self.st.empty()
                 iprog = 0
                 progress_bar.progress(iprog)
                 status_text.text(f'Imputation... {iprog:4.2f}% complete.')        
@@ -705,7 +705,7 @@ try:
                     pbar.update(1)
                     if self.st:
                         iprog = iprog+1
-                        progress_bar.progress((iprog+1)/nprog)
+                        progress_bar.progress(iprog/nprog)
                         status_text.text(f'Imputation... {100*(iprog+1)/nprog:4.2f}% complete.')
 
                     col = self.imp_cols[inds[j]]
