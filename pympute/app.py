@@ -152,7 +152,7 @@ if uploaded_file is not None:
             options = all_models,
             index = all_models.index(session_state.models[col]),
             key = f'MyKey{ikey}',
-#            label_visibility = 'hidden'
+            label_visibility = 'hidden'
         )
         st.markdown('---')
 
