@@ -125,7 +125,8 @@ done = False
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
     if not hasattr(session_state,'first_time'):
-        session_state.models = {i:'LR-r' for i in cols}
+        session_state.cols = df.columns.tolist()
+        session_state.models = {i:'LR-r' for i in session_state.cols}
     session_state.first_time = False
     
     chart_data = df.isnull().mean().to_frame('null')
@@ -140,10 +141,10 @@ if uploaded_file is not None:
 #        
 #    max_iter = st.number_input('Choose maximum iteration number', value=10)
 
-    cols = df.columns.tolist()
+    
     
     col1, col2 = st.columns(2)
-    for col in cols:
+    for col in session_state.cols:
         col1.write(f'{col1:15.15}:')
         session_state.models[col] = col2.selectbox(
             label = '',
