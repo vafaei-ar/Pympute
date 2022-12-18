@@ -114,10 +114,14 @@ def mykde(x,
 from pympute import *
 from pathlib import Path
 
-all_models = list(cpu_regressors_list().keys())+\
-             list(cpu_classifiers_list().keys())+\
-             list(gpu_regressors_list().keys())+\
-             list(gpu_classifiers_list().keys())
+devie = 'gpu'
+
+if devie=='cpu':
+    all_models = list(cpu_regressors_list().keys())+\
+                 list(cpu_classifiers_list().keys())
+else:
+    all_models = list(gpu_regressors_list().keys())+\
+                 list(gpu_classifiers_list().keys())
 
 
 uploaded_file = st.file_uploader("Please choose a csv file.")
@@ -141,54 +145,67 @@ if uploaded_file is not None:
 #        
 #    max_iter = st.number_input('Choose maximum iteration number', value=10)
 
-    
-    
-    
-    for ikey,col in enumerate(session_state.cols):
-#        col1, col2 = st.columns(2)
-#        col1.write(f'{col:15.15}:')
-        session_state.models[col] = st.selectbox(
-            label = col,
-            options = all_models,
-            index = all_models.index(session_state.models[col]),
-            key = f'MyKey{ikey}',
-            label_visibility = 'hidden'
-        )
-        st.markdown('---')
+    with st.expander('Customize models'):
+        for ikey,col in enumerate(session_state.cols):
+    #        col1, col2 = st.columns(2)
+    #        col1.write(f'{col:15.15}:')
+            session_state.models[col] = st.selectbox(
+                label = col,
+                options = all_models,
+                index = all_models.index(session_state.models[col]),
+                key = f'MyKey{ikey}',
+#                label_visibility = 'hidden'
+            )
+
+    if st.checkbox('Normalize data', value=True):
+        normin,normax = get_range(df)
+        df = set_range(df,normin,normax)
 
     if st.button('Impute'): 
-
-        if regn=='None':
-            pass
-        elif regn=='BayesianRidge':
-            from sklearn.linear_model import BayesianRidge
-            estimator = BayesianRidge()
-            imputer = IterativeImputer(random_state=0,
-                                       missing_values=np.nan,
-                                       estimator=estimator,
-                                       max_iter=max_iter,verbose=0)
-            
-            with st.spinner('Wait for it...'):
-                imputed_data = imputer.fit_transform(df)
-                done = True
-           
-    #                y_true = good_data[missed]
-    #                y_pred = imputed_data[missed]
-            
-        elif regn=='ExtraTreesRegressor':
-            from sklearn.ensemble import ExtraTreesRegressor
-            estimator = ExtraTreesRegressor(n_estimators=10, random_state=0,n_jobs=-1)
-            imputer = IterativeImputer(random_state=0,
-                                       missing_values=np.nan,
-                                       estimator=estimator,
-                                       max_iter=max_iter,verbose=0)
-            
-            with st.spinner('Wait for it...'):
-                imputed_data = imputer.fit_transform(df)
-                done = True
-            
+        df_ho,hold_outs = do_holdout(df,5)
+        if devie=='cpu':
+            imp = Imputer(df,session_state.models,
+                          loss_f=None,
+                          fill_method='random',
+                          save_history=False)
         else:
-            print('???')
+            imp = GImputer(df,session_state.models,
+                           loss_f=None,
+                           fill_method='random',
+                           save_history=False,
+                           **kargs)
+
+#        if regn=='None':
+#            pass
+#        elif regn=='BayesianRidge':
+#            from sklearn.linear_model import BayesianRidge
+#            estimator = BayesianRidge()
+#            imputer = IterativeImputer(random_state=0,
+#                                       missing_values=np.nan,
+#                                       estimator=estimator,
+#                                       max_iter=max_iter,verbose=0)
+#            
+#            with st.spinner('Wait for it...'):
+#                imputed_data = imputer.fit_transform(df)
+#                done = True
+#           
+#    #                y_true = good_data[missed]
+#    #                y_pred = imputed_data[missed]
+#            
+#        elif regn=='ExtraTreesRegressor':
+#            from sklearn.ensemble import ExtraTreesRegressor
+#            estimator = ExtraTreesRegressor(n_estimators=10, random_state=0,n_jobs=-1)
+#            imputer = IterativeImputer(random_state=0,
+#                                       missing_values=np.nan,
+#                                       estimator=estimator,
+#                                       max_iter=max_iter,verbose=0)
+#            
+#            with st.spinner('Wait for it...'):
+#                imputed_data = imputer.fit_transform(df)
+#                done = True
+#            
+#        else:
+#            print('???')
             
             
         if done:
@@ -207,6 +224,9 @@ if done:
         'You can choose and see the original vs. imputed data points distrinutions:',
          ['Select one column']+list(dfi.columns))
 
+
+
+#    imp.dist_all(data_n,cl=50,bandwidth=0.05)
 
     if col!='Select one column':
         ad = dfi[col].values
