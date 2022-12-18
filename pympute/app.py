@@ -237,10 +237,9 @@ if hasattr(session_state,'done'):
     col2.write(dfi.style.apply(lambda x: df.applymap(color_cells), axis=None))
     col2.markdown(get_table_download_link_csv(dfi,'imputed'), unsafe_allow_html=True)
 
-if done:
-col = st.selectbox(
-    'You can choose and see the original vs. imputed data points distrinutions:',
-     ['Select one column']+list(dfi.columns))
+    col = st.selectbox(
+        'You can choose and see the original vs. imputed data points distrinutions:',
+         ['Select one column']+list(dfi.columns))
 
 
 
