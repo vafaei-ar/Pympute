@@ -630,7 +630,7 @@ try:
     import tensorflow as tf
 
     class GImputer(Imputer):
-        def __init__(self,data_frame,model,loss_f=None,fill_method='random',save_history=False,batch_input=False):
+        def __init__(self,data_frame,model,loss_f=None,fill_method='random',save_history=False,batch_input=False,st=None):
             assert tf.test.is_built_with_cuda(),'No installed GPU is found!'
             print('Available physical devices are: ',tf.config.list_physical_devices())
 
@@ -659,6 +659,7 @@ try:
             self.save_history = save_history
             self.batch_input = batch_input
             self.history = 0
+            self.st = st
             if self.save_history:
                 self.history = {i:[] for i in self.imp_cols}
 
@@ -689,12 +690,23 @@ try:
 
             ilf = self.loss_frame.shape[0]
 
-            pbar = tqdm(total=n_it*len(inds))
+            nprog = n_it*len(inds)
+            pbar = tqdm(total=nprog, position=0, leave=True)
+            if self.st:
+                progress_bar = self.st.sidebar.progress(0)
+                status_text = self.st.sidebar.empty()
+                iprog = 0
+                progress_bar.progress(iprog)
+                status_text.text(f'Imputation... {iprog:4.2f}% complete.')        
 
             for i in range(n_it):
                 clses = []
                 for j in range(len(inds)):
                     pbar.update(1)
+                    if self.st:
+                        iprog = iprog+1
+                        progress_bar.progress((iprog+1)/nprog)
+                        status_text.text(f'Imputation... {100*(iprog+1)/nprog:4.2f}% complete.')
 
                     col = self.imp_cols[inds[j]]
                     fisna = self.disna[col]
@@ -753,6 +765,7 @@ try:
                 newrow = cudf.DataFrame(index=[ilf+i],columns=self.imp_cols,data=clses) #self.cols[inds]
                 self.loss_frame = self.loss_frame.append(newrow)
             pbar.close()
+            if self.st: progress_bar.progress(100)
             self.to_cpu()
 
         def to_cpu(self):

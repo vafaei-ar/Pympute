@@ -168,13 +168,15 @@ if uploaded_file is not None:
             imp = Imputer(df,session_state.models,
                           loss_f=None,
                           fill_method='random',
-                          save_history=False)
+                          save_history=False,
+                          st=st)
         else:
             kargs = {}
             imp = GImputer(df,session_state.models,
                            loss_f=None,
                            fill_method='random',
                            save_history=False,
+                           st=st,
                            **kargs)
         imp.impute(10,inds=None)
         if devie=='cpu':
