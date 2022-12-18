@@ -239,8 +239,8 @@ if hasattr(session_state,'done'):
 
 if done:
 col = st.selectbox(
-'You can choose and see the original vs. imputed data points distrinutions:',
- ['Select one column']+list(dfi.columns))
+    'You can choose and see the original vs. imputed data points distrinutions:',
+     ['Select one column']+list(dfi.columns))
 
 
 
