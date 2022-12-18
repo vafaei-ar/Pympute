@@ -169,6 +169,7 @@ if uploaded_file is not None:
                           fill_method='random',
                           save_history=False)
         else:
+            kargs = {}
             imp = GImputer(df,session_state.models,
                            loss_f=None,
                            fill_method='random',
