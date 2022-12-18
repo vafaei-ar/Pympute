@@ -125,7 +125,7 @@ else:
 
 
 uploaded_file = st.file_uploader("Please choose a csv file.")
-done = False
+
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
     df0 = df.copy(deep=True)
@@ -182,11 +182,11 @@ if uploaded_file is not None:
         else:
             imp.to_cpu()
         imputed_data = imp.data_frame
-        done = True
+        session_state.done = True
         
 #        df = reset_range(df,normin,normax)
-        df = df0
-        imputed_data = reset_range(imputed_data,normin,normax)
+        session_state.df = df0
+        session_state.imputed_data = reset_range(imputed_data,normin,normax)
         
         
 #        if regn=='None':
@@ -222,21 +222,25 @@ if uploaded_file is not None:
 #            print('???')
             
             
-        if done:
-            dfi = df+0
-            dfi.loc[:,:] = imputed_data
-            st.success('Done!')
-            col1, col2 = st.columns(2)
-            col1.write('original data')
-            col1.write(df.style.highlight_null(null_color='red'))
-            col2.write('imputed data')
-            col2.write(dfi.style.apply(lambda x: df.applymap(color_cells), axis=None))
-            col2.markdown(get_table_download_link_csv(dfi,'imputed'), unsafe_allow_html=True)
+if hasattr(session_state,'done'):
+
+    df = session_state.df
+    imputed_data = session_state.imputed_data
+
+    dfi = df+0
+    dfi.loc[:,:] = imputed_data
+    st.success('Done!')
+    col1, col2 = st.columns(2)
+    col1.write('original data')
+    col1.write(df.style.highlight_null(null_color='red'))
+    col2.write('imputed data')
+    col2.write(dfi.style.apply(lambda x: df.applymap(color_cells), axis=None))
+    col2.markdown(get_table_download_link_csv(dfi,'imputed'), unsafe_allow_html=True)
 
 if done:
-    col = st.selectbox(
-        'You can choose and see the original vs. imputed data points distrinutions:',
-         ['Select one column']+list(dfi.columns))
+col = st.selectbox(
+'You can choose and see the original vs. imputed data points distrinutions:',
+ ['Select one column']+list(dfi.columns))
 
 
 
