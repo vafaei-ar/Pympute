@@ -147,7 +147,7 @@ if uploaded_file is not None:
     for ikey,col in enumerate(session_state.cols):
 #        col1, col2 = st.columns(2)
 #        col1.write(f'{col:15.15}:')
-        session_state.models[col] = col2.selectbox(
+        session_state.models[col] = st.selectbox(
             label = col,
             options = all_models,
             index = all_models.index(session_state.models[col]),
