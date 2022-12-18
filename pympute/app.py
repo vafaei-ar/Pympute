@@ -149,7 +149,7 @@ if uploaded_file is not None:
         session_state.models[col] = col2.selectbox(
             label = '',
             options = all_models,
-            index = all_models.index(session_state.models[col])
+            index = all_models.index(session_state.models[col]),
             key = ikey
         )
 
