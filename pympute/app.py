@@ -175,7 +175,15 @@ if uploaded_file is not None:
                            fill_method='random',
                            save_history=False,
                            **kargs)
-
+        imp.impute(10,inds=None)
+        if devie=='cpu':
+            pass
+        else:
+            imp.to_cpu()
+        imputed = imp.data_frame
+        done = True
+        
+        
 #        if regn=='None':
 #            pass
 #        elif regn=='BayesianRidge':
