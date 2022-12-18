@@ -154,8 +154,7 @@ if uploaded_file is not None:
             key = f'MyKey{ikey}',
             label_visibility = 'hidden'
         )
-
-    
+        st.markdown('---')
 
     if st.button('Impute'): 
 
