@@ -128,6 +128,7 @@ uploaded_file = st.file_uploader("Please choose a csv file.")
 done = False
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
+    df0 = df.copy(deep=True)
     if not hasattr(session_state,'first_time'):
         session_state.cols = df.columns.tolist()
         session_state.models = {i:'LR-r' for i in session_state.cols}
@@ -184,7 +185,7 @@ if uploaded_file is not None:
         done = True
         
 #        df = reset_range(df,normin,normax)
-        df = pd.read_csv(uploaded_file)
+        df = df0
         imputed_data = reset_range(imputed_data,normin,normax)
         
         
