@@ -180,8 +180,11 @@ if uploaded_file is not None:
             pass
         else:
             imp.to_cpu()
-        imputed = imp.data_frame
+        imputed_data = imp.data_frame
         done = True
+        
+        df = reset_range(df,normin,normax)
+        imputed_data = reset_range(imputed_data,normin,normax)
         
         
 #        if regn=='None':
