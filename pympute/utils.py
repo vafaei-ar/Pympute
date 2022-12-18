@@ -401,7 +401,7 @@ class Imputer:
                 if self.st:
                     iprog = iprog+1
                     progress_bar.progress(iprog/nprog)
-                    status_text.text(f'Imputation... {100*(iprog+1)/nprog:4.2f}% complete.')
+                    status_text.text(f'Imputation... {100*iprog/nprog:4.2f}% complete.')
 
                 col = self.imp_cols[inds[j]]
                 fisna = self.disna[col]
@@ -706,7 +706,7 @@ try:
                     if self.st:
                         iprog = iprog+1
                         progress_bar.progress(iprog/nprog)
-                        status_text.text(f'Imputation... {100*(iprog+1)/nprog:4.2f}% complete.')
+                        status_text.text(f'Imputation... {100*iprog/nprog:4.2f}% complete.')
 
                     col = self.imp_cols[inds[j]]
                     fisna = self.disna[col]
