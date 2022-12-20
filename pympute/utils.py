@@ -867,6 +867,7 @@ def explore(df,device='cpu',n_try=5,st=None):
             except:
                 print(f'Something went wrong with {mdl}')
 
+    st.write(dfcomp)
     print(dfcomp.set_index(['model','try']).mean(level=0).apply(pd.to_numeric, errors='ignore').dtypes)
     best_models = dfcomp.set_index(['model','try']).mean(level=0).apply(pd.to_numeric, errors='ignore').idxmin().to_dict()
     if st: progress_bar.progress(100)
