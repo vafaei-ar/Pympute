@@ -871,7 +871,7 @@ def explore(df,device='cpu',n_try=5,st=None):
                 dfcomp.loc[idf,col] = res[col]
             idf = idf+1
 
-        print(dfcomp.loc[idf])
+#        print(dfcomp.loc[idf])
     print(dfcomp.set_index(['model','try']).mean(level=0).apply(pd.to_numeric, errors='ignore').dtypes)
     best_models = dfcomp.set_index(['model','try']).mean(level=0).apply(pd.to_numeric, errors='ignore').idxmin().to_dict()
     if st: progress_bar.progress(100)

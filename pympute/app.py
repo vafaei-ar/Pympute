@@ -180,7 +180,7 @@ if uploaded_file is not None:
     col1, col2 = st.columns(2)
     
     if col2.button('Explore'):
-        imp.explore(5)
+        imp.explore(1)
         session_state.models = imp.models
 
     if col1.button('Impute'): 
