@@ -451,6 +451,7 @@ class Imputer:
         if self.st:
             progress_bar.progress(100)
             progress_bar.empty()
+            status_text.empty()
 
     def plot_loss_frame(self,ax=None):
         if ax is None:
@@ -775,6 +776,7 @@ try:
             if self.st:
                 progress_bar.progress(100)
                 progress_bar.empty()
+                status_text.empty()
             self.to_cpu()
 
         def to_cpu(self):
@@ -881,6 +883,7 @@ def explore(df,device='cpu',n_try=5,st=None):
     if st: 
         progress_bar.progress(100)
         progress_bar.empty()
+        status_text.empty()
     return best_models
 
 def metric_opt(self,metric_f,truth):
