@@ -258,10 +258,10 @@ if hasattr(session_state,'done'):
          ['Select one column']+list(dfi.columns))
 
 
-    fig, axs = session_state.imp.dist_all()
-    st.pyplot(fig)
-    report = session_state.imp.general_report
-    st.write(report)
+#    fig, axs = session_state.imp.dist_all()
+#    st.pyplot(fig)
+#    report = session_state.imp.general_report
+#    st.write(report)
 #    imp.dist_all(data_n,cl=50,bandwidth=0.05)
 
     if col!='Select one column':
