@@ -127,6 +127,7 @@ else:
 uploaded_file = st.file_uploader("Please choose a csv file.")
 
 if uploaded_file is not None:
+    session_state.file_name = uploaded_file.name
     df = pd.read_csv(uploaded_file)
     df0 = df.copy(deep=True)
     if not hasattr(session_state,'first_time'):
@@ -182,6 +183,7 @@ if uploaded_file is not None:
     if col2.button('Recommend'):
         imp.explore(1)
         session_state.models = imp.models
+        st.experimental_rerun()
 
     if col1.button('Impute'): 
 #        df_ho,hold_outs = do_holdout(df,5)
@@ -244,7 +246,9 @@ if hasattr(session_state,'done'):
     col1.write(df.style.highlight_null(null_color='red'))
     col2.write('imputed data')
     col2.write(dfi.style.apply(lambda x: df.applymap(color_cells), axis=None))
-    col2.markdown(get_table_download_link_csv(dfi,'imputed'), unsafe_allow_html=True)
+    col2.markdown(get_table_download_link_csv(dfi,
+    f'imputed_{session_state.file_name}'),
+    unsafe_allow_html=True)
 
     col = st.selectbox(
         'You can choose and see the original vs. imputed data points distrinutions:',
