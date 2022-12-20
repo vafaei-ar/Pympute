@@ -839,36 +839,35 @@ def explore(df,device='cpu',n_try=5,st=None):
                 iprog = iprog+1
                 progress_bar.progress(iprog/nprog)
                 status_text.text(f'Exploration... {100*iprog/nprog:4.2f}% complete.')
-            try:
                 masked_hop = masked_ho.copy(deep=True)
-                models = {}
-                for col in cols:
-                    if isreg.loc[col]:
-                        ext = '-r'
-                    else:
-                        ext = '-c'
-                    models[col] = mdl+ext
+            models = {}
+            for col in cols:
+                if isreg.loc[col]:
+                    ext = '-r'
+                else:
+                    ext = '-c'
+                models[col] = mdl+ext
+            try:
                 imp = Imputer(masked_hop,models,loss_f=None,fill_method='random',save_history=True)
                 imp.impute(n_iterate,inds=None)
-                try:
-                    imp.to_cpu()
-                except:
-                    pass
-                imputed = imp.data_frame
+            except Exception as e:
+                print(f'Something went wrong with {mdl}. {e}')
 
-                # dfs = reset_range(dfs,normin,normax)
-                imputed = reset_range(imputed,normin,normax)
+            if device=='gpu':
+                imp.to_cpu()
+            imputed = imp.data_frame
 
-                res = compare_holdout(imputed,hold_outs,error_rate)
-                dfcomp.loc[idf,'model'] = mdl+ext
-                dfcomp.loc[idf,'try'] = i_try
-                for col in cols:
-                    dfcomp.loc[idf,col] = res[col]
-                idf = idf+1
-            except:
-                print(f'Something went wrong with {mdl}')
+            # dfs = reset_range(dfs,normin,normax)
+            imputed = reset_range(imputed,normin,normax)
 
-    st.write(dfcomp)
+            res = compare_holdout(imputed,hold_outs,error_rate)
+            dfcomp.loc[idf,'model'] = mdl+ext
+            dfcomp.loc[idf,'try'] = i_try
+            for col in cols:
+                dfcomp.loc[idf,col] = res[col]
+            idf = idf+1
+
+        print(dfcomp.loc[idf])
     print(dfcomp.set_index(['model','try']).mean(level=0).apply(pd.to_numeric, errors='ignore').dtypes)
     best_models = dfcomp.set_index(['model','try']).mean(level=0).apply(pd.to_numeric, errors='ignore').idxmin().to_dict()
     if st: progress_bar.progress(100)
