@@ -829,7 +829,7 @@ def explore(df,device='cpu',n_try=5,st=None):
     for i_try in range(n_try):
 
         dfs = df.sample(nsample)
-        normin,normax = get_range(df0)
+        normin,normax = get_range(df)
         masked_ho,hold_outs = do_holdout(dfs,nho)
         dfs = set_range(dfs,normin,normax)
 
