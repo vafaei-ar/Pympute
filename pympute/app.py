@@ -179,7 +179,7 @@ if uploaded_file is not None:
 
     col1, col2 = st.columns(2)
     
-    if col2.button('Explore'):
+    if col2.button('Recommend'):
         imp.explore(1)
         session_state.models = imp.models
 

@@ -448,7 +448,9 @@ class Imputer:
                 if self.save_history:
                     self.history[col].append(pred)
         pbar.close()
-        if self.st: progress_bar.progress(100)
+        if self.st:
+            progress_bar.progress(100)
+            progress_bar.empty()
 
     def plot_loss_frame(self,ax=None):
         if ax is None:
@@ -770,7 +772,9 @@ try:
                 newrow = cudf.DataFrame(index=[ilf+i],columns=self.imp_cols,data=clses) #self.cols[inds]
                 self.loss_frame = self.loss_frame.append(newrow)
             pbar.close()
-            if self.st: progress_bar.progress(100)
+            if self.st:
+                progress_bar.progress(100)
+                progress_bar.empty()
             self.to_cpu()
 
         def to_cpu(self):
@@ -829,7 +833,7 @@ def explore(df,device='cpu',n_try=5,st=None):
         iprog = 0
         nprog = n_try*len(modelset)
         progress_bar.progress(iprog)
-        status_text.text(f'Exploration... {iprog:4.2f}% complete.')
+        status_text.text(f'Finding the best models... {iprog:4.2f}% complete.')
         
     for i_try in range(n_try):
 
@@ -842,7 +846,7 @@ def explore(df,device='cpu',n_try=5,st=None):
             if st:
                 iprog = iprog+1
                 progress_bar.progress(iprog/nprog)
-                status_text.text(f'Exploration... {100*iprog/nprog:4.2f}% complete.')
+                status_text.text(f'Finding the best models... {100*iprog/nprog:4.2f}% complete.')
                 masked_hop = masked_ho.copy(deep=True)
             models = {}
             for col in cols:
@@ -852,7 +856,7 @@ def explore(df,device='cpu',n_try=5,st=None):
                     ext = '-c'
                 models[col] = mdl+ext
             try:
-                imp = Imputer(masked_hop,models,loss_f=None,fill_method='random',save_history=True)
+                imp = Imputer(masked_hop,models,loss_f=None,fill_method='random',save_history=True,st=st)
                 imp.impute(n_iterate,inds=None)
             except Exception as e:
                 print(f'Something went wrong with {mdl}. {e}')
@@ -874,7 +878,9 @@ def explore(df,device='cpu',n_try=5,st=None):
 #        print(dfcomp.loc[idf])
     print(dfcomp.set_index(['model','try']).mean(level=0).apply(pd.to_numeric, errors='ignore').dtypes)
     best_models = dfcomp.set_index(['model','try']).mean(level=0).apply(pd.to_numeric, errors='ignore').idxmin().to_dict()
-    if st: progress_bar.progress(100)
+    if st: 
+        progress_bar.progress(100)
+        progress_bar.empty()
     return best_models
 
 def metric_opt(self,metric_f,truth):
