@@ -791,6 +791,10 @@ try:
 except:
     print('GPU functionality is not available!')
 
+def error_rate(x1,x2,eps=None):
+    if not eps: eps = np.exp(-100*np.abs(x1))
+    err = 100*np.abs(x1-x2)/(x1+eps)
+    return np.mean(err)
 
 def explore(df,device='cpu',n_try=5,st=None):
 
