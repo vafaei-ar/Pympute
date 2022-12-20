@@ -193,6 +193,7 @@ if uploaded_file is not None:
         else:
             imp.to_cpu()
         imputed_data = imp.data_frame
+        session_state.imp = imp
         session_state.done = True
         
 #        df = reset_range(df,normin,normax)
@@ -255,36 +256,41 @@ if hasattr(session_state,'done'):
          ['Select one column']+list(dfi.columns))
 
 
-
+    fig, axs = session_state.imp.dist_all()
+    st.pyplot(fig)
+    report = session_state.imp.general_report
+    st.write(report)
 #    imp.dist_all(data_n,cl=50,bandwidth=0.05)
 
     if col!='Select one column':
-        ad = dfi[col].values
-        ma = np.isnan(df[col].values)
-        gd = ad[~ma]
-        im = ad[ma]
-        
-        if len(im)==0:
-            st.write('This column was already complete!')
-        else:
-            cl = 95
-            fig, ax = plt.subplots(1,1,figsize=(8,5))
-            m,l,u = mykde(gd, cl=95, color='b', alpha=0.3, kernel='gaussian', bandwidth=0.2, ax=ax)
-            aw1 = u-l
-            m,l,u = mykde(im, cl=95, color='r', alpha=0.3, kernel='gaussian', bandwidth=0.2, ax=ax)
-            aw2 = u-l
-            
-            ax.set_ylim(bottom=0)
-            
-            red_patch = mpatches.Patch(color='red', label='imputed data')
-            blue_patch = mpatches.Patch(color='blue', label='existing data')
+        fig,ax,(m1,l1,u1),(m2,l2,u2) = session_state.imp.dist(col)
+        st.pyplot(fig)
+#        ad = dfi[col].values
+#        ma = np.isnan(df[col].values)
+#        gd = ad[~ma]
+#        im = ad[ma]
+#        
+#        if len(im)==0:
+#            st.write('This column was already complete!')
+#        else:
+#            cl = 95
+#            fig, ax = plt.subplots(1,1,figsize=(8,5))
+#            m,l,u = mykde(gd, cl=95, color='b', alpha=0.3, kernel='gaussian', bandwidth=0.2, ax=ax)
+#            aw1 = u-l
+#            m,l,u = mykde(im, cl=95, color='r', alpha=0.3, kernel='gaussian', bandwidth=0.2, ax=ax)
+#            aw2 = u-l
+#            
+#            ax.set_ylim(bottom=0)
+#            
+#            red_patch = mpatches.Patch(color='red', label='imputed data')
+#            blue_patch = mpatches.Patch(color='blue', label='existing data')
 
-            ax.legend(handles=[red_patch, blue_patch])
-            
-            st.pyplot(fig)
-            
-#            st.write('R is {:4.2f}'.format(r2_score())
-            st.write('AW1 is {:4.2f} and AW2 is {:4.2f}'.format(aw1,aw2))
+#            ax.legend(handles=[red_patch, blue_patch])
+#            
+#            st.pyplot(fig)
+#            
+##            st.write('R is {:4.2f}'.format(r2_score())
+#            st.write('AW1 is {:4.2f} and AW2 is {:4.2f}'.format(aw1,aw2))
 
 
 

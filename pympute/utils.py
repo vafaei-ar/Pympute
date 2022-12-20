@@ -384,12 +384,16 @@ class Imputer:
         df = self.data_frame0.copy(deep=True)
         self.models = explore(df,device='cpu',n_try=n_try,st=self.st)
 
-    def impute(self,n_it,inds=None,trsh=-np.inf,**kargs):
+    def impute(self,n_it,inds=None,normalize=True,trsh=-np.inf,**kargs):
         if inds is None:
             inds = np.arange(self.imp_ncol)
             np.random.shuffle(inds)
     
         ilf = self.loss_frame.shape[0]
+        
+        if normalize:
+            normin,normax = get_range(self.data_frame)
+            self.data_frame = set_range(self.data_frame,normin,normax)            
         
         nprog = n_it*len(inds)
         pbar = tqdm(total=nprog, position=0, leave=True)
@@ -447,6 +451,8 @@ class Imputer:
                 self.data_frame.loc[fisna,col] = pred
                 if self.save_history:
                     self.history[col].append(pred)
+        
+        if normalize: self.data_frame = reset_range(self.data_frame,normin,normax)
         pbar.close()
         if self.st:
             progress_bar.progress(100)
@@ -548,7 +554,7 @@ class Imputer:
         if save is not None:
             plt.savefig(save+'.jpg',dpi=200)
         
-        return (m1,l1,u1),(m2,l2,u2)
+        return fig,ax,(m1,l1,u1),(m2,l2,u2)
 
     def dist_all(self,truth=None,cl=25,bandwidth=None,save=None):
         
@@ -573,7 +579,8 @@ class Imputer:
         plt.tight_layout()
         if save is not None:
             plt.savefig(save+'.jpg',dpi=200)
-
+        return fig, axs
+        
     def metric_opt(self,metric_f,truth):
         lsses = []
         for col in self.imp_cols:
