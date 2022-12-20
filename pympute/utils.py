@@ -819,8 +819,8 @@ def explore(df,device='cpu',n_try=5,st=None):
     idf = 0
 
     if st:
-        progress_bar = self.st.progress(0)
-        status_text = self.st.empty()
+        progress_bar = st.progress(0)
+        status_text = st.empty()
         iprog = 0
         nprog = n_try*len(modelset)
         progress_bar.progress(iprog)
