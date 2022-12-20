@@ -159,9 +159,10 @@ if uploaded_file is not None:
 #                label_visibility = 'hidden'
             )
 
-    if st.checkbox('Normalize data', value=True):
-        normin,normax = get_range(df)
-        df = set_range(df,normin,normax)
+    norm = st.checkbox('Normalize data', value=True)
+#        normin,normax = get_range(df)
+#        df = set_range(df,normin,normax)
+#        norm = 
 
     if devie=='cpu':
         imp = Imputer(df,session_state.models,
@@ -187,7 +188,7 @@ if uploaded_file is not None:
 
     if col1.button('Impute'): 
 #        df_ho,hold_outs = do_holdout(df,5)
-        imp.impute(10,inds=None)
+        imp.impute(10,inds=None,normalize=norm)
         if devie=='cpu':
             pass
         else:
@@ -198,7 +199,8 @@ if uploaded_file is not None:
         
 #        df = reset_range(df,normin,normax)
         session_state.df = df0
-        session_state.imputed_data = reset_range(imputed_data,normin,normax)
+        session_state.imputed_data = imputed_data
+#        session_state.imputed_data = reset_range(imputed_data,normin,normax)
         
         
 #        if regn=='None':
