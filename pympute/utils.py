@@ -329,6 +329,7 @@ def gpu_classifiers_list():
 
 class Imputer:
     def __init__(self,data_frame,model,loss_f=None,fill_method='random',save_history=False,batch_input=False,st=None):
+        self.data_frame0 = data_frame.copy(deep=True)
         self.data_frame = data_frame
         self.disna = data_frame.isna()
         
@@ -380,7 +381,7 @@ class Imputer:
             self.models[col] = model
 
     def explore(self,n_try=5):
-        df = self.data_frame.copy(deep=True)
+        df = self.data_frame0.copy(deep=True)
         self.models = explore(df,device='cpu',n_try=n_try,st=self.st)
 
     def impute(self,n_it,inds=None,trsh=-np.inf,**kargs):
