@@ -379,6 +379,10 @@ class Imputer:
             model = self.model_class(**kargs)
             self.models[col] = model
 
+    def explore(self,n_try=5):
+        df = self.data_frame.copy(deep=True)
+        self.models = explore(df,device='cpu',n_try=n_try,st=self.st)
+
     def impute(self,n_it,inds=None,trsh=-np.inf,**kargs):
         if inds is None:
             inds = np.arange(self.imp_ncol)
@@ -785,6 +789,87 @@ try:
                 self.disna = cudf.from_pandas(self.disna)     
 except:
     print('GPU functionality is not available!')
+
+
+def explore(df,device='cpu',n_try=5,st=None):
+
+    if device=='cpu':
+        modelset = np.union1d(
+                    [i.replace('-r','') for i in cpu_regressors_list().keys()],
+                    [i.replace('-c','') for i in cpu_classifiers_list()]
+                    )
+    elif device=='gpu':
+        modelset = np.union1d(
+                    [i.replace('-r','') for i in gpu_regressors_list().keys()],
+                    [i.replace('-c','') for i in gpu_classifiers_list()]
+                    )
+    else:
+        assert 0,'Device is not recognized!'
+
+    isreg = df.nunique()>10
+    nd = df.shape[0]
+    cols = list(df.columns)
+    nsample = min(np.clip(nd/10,200,2000).astype(int),nd)
+    nho = nsample//10
+
+    n_iterate = 10
+    n_try = 5
+
+    dfcomp = pd.DataFrame(columns=['model','try']+cols)
+    idf = 0
+
+    if st:
+        progress_bar = self.st.progress(0)
+        status_text = self.st.empty()
+        iprog = 0
+        nprog = n_try*len(modelset)
+        progress_bar.progress(iprog)
+        status_text.text(f'Exploration... {iprog:4.2f}% complete.')
+        
+    for i_try in range(n_try):
+
+        dfs = df.sample(nsample)
+        normin,normax = get_range(df0)
+        masked_ho,hold_outs = do_holdout(dfs,nho)
+        dfs = set_range(dfs,normin,normax)
+
+        for mdl in modelset:
+            if st:
+                iprog = iprog+1
+                progress_bar.progress(iprog/nprog)
+                status_text.text(f'Exploration... {100*iprog/nprog:4.2f}% complete.')
+            try:
+                masked_hop = masked_ho.copy(deep=True)
+                models = {}
+                for col in cols:
+                    if isreg.loc[col]:
+                        ext = '-r'
+                    else:
+                        ext = '-c'
+                    models[col] = mdl+ext
+                imp = Imputer(masked_hop,models,loss_f=None,fill_method='random',save_history=True)
+                imp.impute(n_iterate,inds=None)
+                try:
+                    imp.to_cpu()
+                except:
+                    pass
+                imputed = imp.data_frame
+
+                # dfs = reset_range(dfs,normin,normax)
+                imputed = reset_range(imputed,normin,normax)
+
+                res = compare_holdout(imputed,hold_outs,error_rate)
+                dfcomp.loc[idf,'model'] = mdl+ext
+                dfcomp.loc[idf,'try'] = i_try
+                for col in cols:
+                    dfcomp.loc[idf,col] = res[col]
+                idf = idf+1
+            except:
+                print(f'Something went wrong with {mdl}')
+
+    best_models = dfcomp.set_index(['model','try']).mean(level=0).apply(pd.to_numeric, errors='ignore').idxmin().to_dict()
+    if st: progress_bar.progress(100)
+    return best_models
 
 def metric_opt(self,metric_f,truth):
     lsses = []

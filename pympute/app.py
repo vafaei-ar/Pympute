@@ -162,22 +162,27 @@ if uploaded_file is not None:
         normin,normax = get_range(df)
         df = set_range(df,normin,normax)
 
-    if st.button('Impute'): 
-        df_ho,hold_outs = do_holdout(df,5)
-        if devie=='cpu':
-            imp = Imputer(df,session_state.models,
-                          loss_f=None,
-                          fill_method='random',
-                          save_history=False,
-                          st=st)
-        else:
-            kargs = {}
-            imp = GImputer(df,session_state.models,
-                           loss_f=None,
-                           fill_method='random',
-                           save_history=False,
-                           st=st,
-                           **kargs)
+    if devie=='cpu':
+        imp = Imputer(df,session_state.models,
+                      loss_f=None,
+                      fill_method='random',
+                      save_history=False,
+                      st=st)
+    else:
+        kargs = {}
+        imp = GImputer(df,session_state.models,
+                       loss_f=None,
+                       fill_method='random',
+                       save_history=False,
+                       st=st,
+                       **kargs)
+
+    col1, col2 = st.columns(2)
+    if col2.button('Explore'):
+        imp.explore(5)
+        st.write(imp.models)
+    if col1.button('Impute'): 
+#        df_ho,hold_outs = do_holdout(df,5)
         imp.impute(10,inds=None)
         if devie=='cpu':
             pass
