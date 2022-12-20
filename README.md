@@ -34,7 +34,7 @@ The package is tested on [**Anaconda**](https://www.anaconda.com/download/#linux
 $ conda env create -f environment_impute.yml
 ```
 
-**python-imputation** is a ...
+**python-imputation** is an imputation package. 
 
 <!--<p align="center">-->
 <!--  <img src="./images/ds9flow.jpg" width="800"/>-->
