@@ -827,7 +827,8 @@ def explore(df,device='cpu',n_try=5,st=None):
     isreg = df.nunique()>10
     nd = df.shape[0]
     cols = list(df.columns)
-    nsample = min(np.clip(nd/10,200,2000).astype(int),nd)
+    assert nd>50 , 'The data is too small!'
+    nsample = min(np.clip(nd/10,50,500).astype(int),nd)
     nho = nsample//10
 
     n_iterate = 10

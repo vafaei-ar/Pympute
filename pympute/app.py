@@ -128,6 +128,7 @@ uploaded_file = st.file_uploader("Please choose a csv file.")
 
 if uploaded_file is not None:
     session_state.file_name = uploaded_file.name
+    if hasattr(session_state,'done'): del session_state.done
     df = pd.read_csv(uploaded_file)
     df0 = df.copy(deep=True)
     if not hasattr(session_state,'first_time'):
