@@ -258,7 +258,7 @@ if hasattr(session_state,'done'):
     col1.write('original data')
     col1.write(df.iloc[inds].style.highlight_null(null_color='red'))
     col2.write('imputed data')
-    col2.write(dfi.iloc[inds].style.apply(lambda x: df.applymap(color_cells), axis=None))
+    col2.write(dfi.iloc[inds].style.apply(lambda x: df.iloc[inds].applymap(color_cells), axis=None))
     col2.markdown(get_table_download_link_csv(dfi,
     f'imputed_{session_state.file_name}'),
     unsafe_allow_html=True)
