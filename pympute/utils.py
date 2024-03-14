@@ -881,7 +881,7 @@ def explore(df,device='cpu',n_try=5,st=None):
             res = compare_holdout(imputed,hold_outs,error_rate)
             dfcomp.loc[idf,'model'] = mdl+ext
             dfcomp.loc[idf,'try'] = i_try
-            for col in cols:
+            for col in missing_columns:
                 dfcomp.loc[idf,col] = res[col]
             idf = idf+1
 
