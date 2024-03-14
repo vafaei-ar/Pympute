@@ -201,7 +201,7 @@ def get_model(model,gpu=False):
                 print('| {:12s} | {:50s}|'.format(k,v))
             print(68*'=')
 
-            assert 0,'The model is not recognized!'
+            assert 0, f'The model {model} is not recognized!'
     else:
         if model=='LR-r':
             from cuml.linear_model import LinearRegression
