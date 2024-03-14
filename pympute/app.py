@@ -133,8 +133,9 @@ if uploaded_file is not None:
     df0 = df.copy(deep=True)
     if not hasattr(session_state,'first_time'):
         # session_state.cols = df.columns.tolist()
-        session_state.cols = missing_columns = [col for col in df.columns if df[col].isnull().sum() > 0]
+        session_state.cols = [col for col in df.columns if df[col].isnull().sum() > 0]
         session_state.models = {i:'LR-r' for i in session_state.cols}
+        st.print(session_state.models)
     session_state.first_time = False
     
     chart_data = df.isnull().mean().to_frame('null')
