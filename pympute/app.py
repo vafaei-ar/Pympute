@@ -132,7 +132,8 @@ if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
     df0 = df.copy(deep=True)
     if not hasattr(session_state,'first_time'):
-        session_state.cols = df.columns.tolist()
+        # session_state.cols = df.columns.tolist()
+        session_state.cols = missing_columns = [col for col in df.columns if df[col].isnull().sum() > 0]
         session_state.models = {i:'LR-r' for i in session_state.cols}
     session_state.first_time = False
     
