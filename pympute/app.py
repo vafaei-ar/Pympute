@@ -244,13 +244,15 @@ if hasattr(session_state,'done'):
     dfi = df.copy(deep=1)
     dfi.loc[:,:] = imputed_data
     # dfi0 = dfi.copy(deep=1)
-    n_row = df.shape[0]
-    inds = np.arange(n_row)
+    n_rows = df.shape[0]
+    n_cols = df.shape[1]
+    inds = np.arange(n_rows)
     nmax = 100000
-    if n_row>nmax:
-        st.warning(f'The data is too large, a sample of {nmax} will be shown.', icon="⚠️")
+    if n_rows*n_cols>nmax:
+        n_rows_new = int(nmax/n_cols)
+        st.warning(f'The data is too large, a sample of {n_rows_new} will be shown.', icon="⚠️")
         np.random.shuffle(inds)
-        inds = inds[:nmax]
+        inds = inds[:n_rows_new]
     st.success('Done!')
     col1, col2 = st.columns(2)
     col1.write('original data')
