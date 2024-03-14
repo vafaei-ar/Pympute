@@ -241,14 +241,22 @@ if hasattr(session_state,'done'):
     df = session_state.df
     imputed_data = session_state.imputed_data
 
-    dfi = df+0
+    dfi = df.copy(deep=1)
     dfi.loc[:,:] = imputed_data
+    # dfi0 = dfi.copy(deep=1)
+    n_row = df.shape[0]
+    inds = np.arange(n_row)
+    nmax = 100000
+    if n_row>nmax:
+        st.warning(f'The data is too large, a sample of {nmax} will be shown.', icon="⚠️")
+        np.random.shuffle(inds)
+        inds = inds[:nmax]
     st.success('Done!')
     col1, col2 = st.columns(2)
     col1.write('original data')
-    col1.write(df.style.highlight_null(null_color='red'))
+    col1.write(df.iloc[inds].style.highlight_null(null_color='red'))
     col2.write('imputed data')
-    col2.write(dfi.style.apply(lambda x: df.applymap(color_cells), axis=None))
+    col2.write(dfi.iloc[inds].style.apply(lambda x: df.applymap(color_cells), axis=None))
     col2.markdown(get_table_download_link_csv(dfi,
     f'imputed_{session_state.file_name}'),
     unsafe_allow_html=True)
