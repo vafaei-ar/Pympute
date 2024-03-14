@@ -851,7 +851,7 @@ def explore(df,device='cpu',n_try=5,st=None):
         normin,normax = get_range(df)
         masked_ho,hold_outs = do_holdout(dfs,nho)
         dfs = set_range(dfs,normin,normax)
-
+        missing_columns = [col for col in df.columns if df[col].isnull().sum() > 0]
         for mdl in modelset:
             if st:
                 iprog = iprog+1
@@ -859,7 +859,7 @@ def explore(df,device='cpu',n_try=5,st=None):
                 status_text.text(f'Finding the best models... {100*iprog/nprog:4.2f}% complete.')
                 masked_hop = masked_ho.copy(deep=True)
             models = {}
-            for col in cols:
+            for col in missing_columns:
                 if isreg.loc[col]:
                     ext = '-r'
                 else:
