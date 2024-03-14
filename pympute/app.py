@@ -135,7 +135,7 @@ if uploaded_file is not None:
         # session_state.cols = df.columns.tolist()
         session_state.cols = [col for col in df.columns if df[col].isnull().sum() > 0]
         session_state.models = {i:'LR-r' for i in session_state.cols}
-        st.write(session_state.models)
+        # st.write(session_state.models)
     session_state.first_time = False
     
     chart_data = df.isnull().mean().to_frame('null')

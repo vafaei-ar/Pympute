@@ -851,7 +851,7 @@ def explore(df,device='cpu',n_try=5,st=None):
         normin,normax = get_range(df)
         masked_ho,hold_outs = do_holdout(dfs,nho)
         dfs = set_range(dfs,normin,normax)
-        missing_columns = [col for col in dfs.columns if dfs[col].isnull().sum() > 0]
+        missing_columns = [col for col in df.columns if df[col].isnull().sum() > 0]
         for mdl in modelset:
             if st:
                 iprog = iprog+1
@@ -865,11 +865,17 @@ def explore(df,device='cpu',n_try=5,st=None):
                 else:
                     ext = '-c'
                 models[col] = mdl+ext
-            try:
-                imp = Imputer(masked_hop,models,loss_f=None,fill_method='random',save_history=True,st=st)
+            if device=='cpu':
+                imp = Imputer(masked_hop,models,loss_f=None,fill_method='random',save_history=True)
                 imp.impute(n_iterate,inds=None)
-            except Exception as e:
-                print(f'Something went wrong with {mdl}. {e}')
+            else:
+                imp = GImputer(masked_hop,models,loss_f=None,fill_method='random',save_history=True)
+                imp.impute(n_iterate,inds=None)
+            # try:
+            #     imp = Imputer(masked_hop,models,loss_f=None,fill_method='random',save_history=True,st=st)
+            #     imp.impute(n_iterate,inds=None)
+            # except Exception as e:
+            #     print(f'Something went wrong with {mdl}. {e}')
 
             if device=='gpu':
                 imp.to_cpu()
