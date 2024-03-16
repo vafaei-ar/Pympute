@@ -809,8 +809,8 @@ def error_rate(x1,x2,eps=None):
     err = 100*np.abs(x1-x2)/(x1+eps)
     return np.mean(err)
 
-def explore(df,device='cpu',n_try=5,st=None):
-
+def explore(df0,device='cpu',n_try=5,st=None):
+    df = df0.copy(deep=1)
     if device=='cpu':
         # modelset = np.union1d(
         #             [i.replace('-r','') for i in cpu_regressors_list().keys()],
@@ -830,9 +830,9 @@ def explore(df,device='cpu',n_try=5,st=None):
     nd = df.shape[0]
     cols = list(df.columns)
     assert nd>50 , 'The data is too small!'
-    nsample = min(np.clip(nd/10,50,500).astype(int),nd)
-    nho = nsample//10
-
+    # nsample = min(np.clip(nd/10,50,500).astype(int),nd)
+    # nho = nsample//10
+    nho = min(np.clip(nd/10,2,50).astype(int),nd-1)
     n_iterate = 10
     n_try = 5
 
@@ -849,9 +849,9 @@ def explore(df,device='cpu',n_try=5,st=None):
         
     for i_try in range(n_try):
 
-        dfs = df.sample(nsample)
+        # dfs = df.sample(nsample)
         normin,normax = get_range(df)
-        masked_ho,hold_outs = do_holdout(dfs,nho)
+        masked_ho,hold_outs = do_holdout(df,nho)
         dfs = set_range(dfs,normin,normax)
         missing_columns = [col for col in df.columns if df[col].isnull().sum() > 0]
         for mdl in modelset:
@@ -971,7 +971,8 @@ def unpack(model, training_config, weights):
 
 def do_holdout(df0,n_hold):
     df = df0+0
-    cols = df.columns[df.isnull().any()]
+    # cols = df.columns[df.isnull().any()]
+    cols = [col for col in df.columns if df[col].isnull().sum() > 0]
     hold_outs = {}
     for col in cols:
         filt = ~df[col].isna()
