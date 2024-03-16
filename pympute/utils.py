@@ -826,7 +826,7 @@ def explore(df,device='cpu',n_try=5,st=None):
     else:
         assert 0,'Device is not recognized!'
 
-    isreg = df.nunique()>10
+    isreg = df.nunique()>1 # TODO: should be changed for classifiers
     nd = df.shape[0]
     cols = list(df.columns)
     assert nd>50 , 'The data is too small!'
