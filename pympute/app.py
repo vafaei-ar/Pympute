@@ -142,7 +142,7 @@ if uploaded_file is not None:
     chart_data['data'] = 1-chart_data['null']
     missed = np.isnan(df)
 #        filt = np.mean(missed,axis=1)!=1
-    st.bar_chart(chart_data)
+    st.bar_chart(chart_data, color=["#0000FF", "#FF0000"])
 
 #    regn = st.selectbox(
 #        'please choose the Ml estimator?',
