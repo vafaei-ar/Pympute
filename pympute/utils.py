@@ -814,12 +814,12 @@ def explore(df,device='cpu',n_try=5,st=None):
     if device=='cpu':
         modelset = np.union1d(
                     [i.replace('-r','') for i in cpu_regressors_list().keys()],
-                    [i.replace('-c','') for i in cpu_classifiers_list()]
+                    # [i.replace('-c','') for i in cpu_classifiers_list()] TO DO
                     )
     elif device=='gpu':
         modelset = np.union1d(
                     [i.replace('-r','') for i in gpu_regressors_list().keys()],
-                    [i.replace('-c','') for i in gpu_classifiers_list()]
+                    # [i.replace('-c','') for i in gpu_classifiers_list()] TO DO
                     )
     else:
         assert 0,'Device is not recognized!'
