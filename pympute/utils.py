@@ -852,7 +852,7 @@ def explore(df0,device='cpu',n_try=5,st=None):
         # dfs = df.sample(nsample)
         normin,normax = get_range(df)
         masked_ho,hold_outs = do_holdout(df,nho)
-        dfs = set_range(dfs,normin,normax)
+        df = set_range(df,normin,normax)
         missing_columns = [col for col in df.columns if df[col].isnull().sum() > 0]
         for mdl in modelset:
             if st:
