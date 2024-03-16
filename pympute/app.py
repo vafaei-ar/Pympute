@@ -138,8 +138,8 @@ if uploaded_file is not None:
         # st.write(session_state.models)
     session_state.first_time = False
     
-    chart_data = df.isnull().mean().to_frame('null')
-    chart_data['data'] = 1-chart_data['null']
+    chart_data = 100*(df.isnull().mean().to_frame('null'))
+    chart_data['data'] = 100-chart_data['null']
     missed = np.isnan(df)
 #        filt = np.mean(missed,axis=1)!=1
     st.bar_chart(chart_data, color=["#0000FF", "#FF0000"])
