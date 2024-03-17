@@ -746,10 +746,15 @@ try:
                     x = self.data_frame.drop(columns=[col])
                     y = self.data_frame[col]
 
+                    # TODO: should be removed later.
+                    assert x.isnull().sum().sum()==0, f'x has null while y={col}!'
+                    assert y.isnull().sum().sum()==0, f'y={col} has null!'
+
                     x_train = x[~fisna]
                     y_train = y[~fisna]
                     x_test = x[fisna]
                     y_test = y[fisna]
+                    
                     if self.batch_input and len(y_test)==0:
                         clses.append(0)
                         continue
