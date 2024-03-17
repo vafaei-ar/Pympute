@@ -114,7 +114,11 @@ def mykde(x,
 from pympute import *
 from pathlib import Path
 
-devie = 'cpu'
+from shutil import which
+if which('nvidia-smi') is None:
+    devie = 'cpu'
+else:
+    devie = 'gpu'
 
 if devie=='cpu':
     all_models = list(cpu_regressors_list().keys())+\
