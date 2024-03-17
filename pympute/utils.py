@@ -649,6 +649,7 @@ try:
             assert tf.test.is_built_with_cuda(),'No installed GPU is found!'
             print('Available physical devices are: ',tf.config.list_physical_devices())
 
+            self.data_frame0 = data_frame.copy(deep=True)
             self.data_frame = data_frame
             self.data_frame = self.data_frame.apply(lambda x: x.astype(np.float32))
             self.disna = self.data_frame.isna()
