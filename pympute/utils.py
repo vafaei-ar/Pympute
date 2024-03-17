@@ -66,7 +66,7 @@ def set_mean_std(xx,xmean=0,xstd=1):
 #     xx = xx*(normax-normin)+normin
 #     return xx
 
-def fill_random(df,batch_input):
+def fill_random(df,batch_input=False):
     dd = deepcopy(df)
     cols = dd.columns
     for col in cols:
@@ -78,7 +78,7 @@ def fill_random(df,batch_input):
         dd.loc[fmiss,col] = smiss
     return dd
 
-def gfill_random(df,batch_input):
+def gfill_random(df,batch_input=False):
     dd = deepcopy(df)
     cols = dd.columns
     for col in cols:
