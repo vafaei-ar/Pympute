@@ -747,8 +747,8 @@ try:
                     y = self.data_frame[col]
 
                     # TODO: should be removed later.
-                    assert x.isnull().sum().sum()==0, f'x has null while y={col}!'
-                    assert y.isnull().sum().sum()==0, f'y={col} has null!'
+                    # assert x.isnull().sum().sum()==0, f'x has null while y={col}!'
+                    # assert y.isnull().sum().sum()==0, f'y={col} has null!'
 
                     x_train = x[~fisna]
                     y_train = y[~fisna]
@@ -771,6 +771,7 @@ try:
                     if pred.ndim>1:
                         pred = pred[:,0]
 
+                    assert pred.isna().sum()==0, f'predict for col={col} has null!'
                     c_loss = self.loss_f(y_test,pred)
                     clses.append(c_loss)
                     if type(pred) is cudf.Series:
