@@ -772,6 +772,7 @@ try:
                         pred = pred[:,0]
 
                     if pred.isna().sum()!=0:
+                        pred[pred.isna()] = 0
                         print(f'Problem with this model! NaN outcomes!')
                         if st:
                             st.warning(f'Problem with this model! NaN outcomes!', icon="⚠️")
