@@ -771,7 +771,11 @@ try:
                     if pred.ndim>1:
                         pred = pred[:,0]
 
-                    assert pred.isna().sum()==0, f'predict for col={col} has null!'
+                    if pred.isna().sum()!=0:
+                        print(f'Problem with this model! NaN outcomes!')
+                        if st:
+                            st.warning(f'Problem with this model! NaN outcomes!', icon="⚠️")
+
                     c_loss = self.loss_f(y_test,pred)
                     clses.append(c_loss)
                     if type(pred) is cudf.Series:
