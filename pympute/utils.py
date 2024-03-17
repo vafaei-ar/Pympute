@@ -769,7 +769,7 @@ try:
                     c_loss = self.loss_f(y_test,pred)
                     clses.append(c_loss)
                     if type(pred) is cudf.Series:
-                        pred = pred.to_array()
+                        pred = pred.to_numpy()
                     self.data_frame.loc[fisna,col] = pred
                     nn = self.data_frame[col].isna().sum()
                     assert nn==0,'{}   {}   {}   {}'.format(col,fisna.sum(),pred.shape,nn)
