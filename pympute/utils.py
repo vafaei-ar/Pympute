@@ -332,6 +332,7 @@ class Imputer:
         self.data_frame0 = data_frame.copy(deep=True)
         self.data_frame = data_frame
         self.disna = data_frame.isna()
+        self.device = 'cpu'
         
         if type(model) is str:
             self.model_class = get_model(model,gpu=False)
@@ -382,7 +383,7 @@ class Imputer:
 
     def explore(self,n_try=5):
         df = self.data_frame0.copy(deep=True)
-        self.models = explore(df,device='cpu',n_try=n_try,st=self.st)
+        self.models = explore(df,device=self.device,n_try=n_try,st=self.st)
 
     def impute(self,n_it,inds=None,normalize=True,trsh=-np.inf,**kargs):
         if inds is None:
@@ -655,6 +656,7 @@ try:
             self.disna = self.data_frame.isna()
             self.disna = cudf.from_pandas(self.disna)
             self.data_frame = cudf.from_pandas(self.data_frame)
+            self.device = 'gpu'
 
             if type(model) is str:
                 self.model_class = get_model(model,gpu=True)
