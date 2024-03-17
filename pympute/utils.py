@@ -845,7 +845,7 @@ def explore(df0,device='cpu',n_try=5,st=None):
         iprog = 0
         nprog = n_try*len(modelset)
         progress_bar.progress(iprog)
-        status_text.text(f'Finding the best models... {iprog:4.2f}% complete.')
+        status_text.text(f'Finding the best models using {device} ... {iprog:4.2f}% complete.')
         
     for i_try in range(n_try):
 
@@ -858,7 +858,7 @@ def explore(df0,device='cpu',n_try=5,st=None):
             if st:
                 iprog = iprog+1
                 progress_bar.progress(iprog/nprog)
-                status_text.text(f'Finding the best models... {100*iprog/nprog:4.2f}% complete.')
+                status_text.text(f'Finding the best models using {device}, try {i_try}, model {mdl} ... {100*iprog/nprog:4.2f}% complete.')
             masked_hop = masked_ho.copy(deep=True)
             models = {}
             for col in missing_columns:
