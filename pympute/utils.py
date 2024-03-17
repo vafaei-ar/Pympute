@@ -774,7 +774,7 @@ try:
                     if pred.isna().sum()!=0:
                         pred[pred.isna()] = 0
                         print(f'Problem with this model! NaN outcomes!')
-                        if st:
+                        if self.st:
                             st.warning(f'Problem with this model! NaN outcomes!', icon="⚠️")
 
                     c_loss = self.loss_f(y_test,pred)
