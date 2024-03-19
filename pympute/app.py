@@ -17,7 +17,7 @@ session_state = st.session_state
 
 st.sidebar.title('Data imputation tool.')
 st.sidebar.image(os.path.join(dirname,'media/logo.png'), use_column_width=True)
-
+msg = st.toast('Looking for resources...')
 
 #mode = st.radio(
 #"Please choose the procedure:",
@@ -117,8 +117,10 @@ from pathlib import Path
 from shutil import which
 if which('nvidia-smi') is None:
     devie = 'cpu'
+    msg.toast('Seems like the GPU is on a break. CPU to the rescue!', icon='🐌')
 else:
     devie = 'gpu'
+    msg.toast('GPU is found! Buckle up!', icon='😍')
 
 if devie=='cpu':
     all_models = list(cpu_regressors_list().keys())+\
@@ -166,7 +168,7 @@ if uploaded_file is not None:
 #                label_visibility = 'hidden'
             )
 
-    norm = st.checkbox('Normalize data', value=True)
+    norm = st.sidebar.checkbox('Normalize data', value=True)
 #        normin,normax = get_range(df)
 #        df = set_range(df,normin,normax)
 #        norm = 
@@ -186,14 +188,10 @@ if uploaded_file is not None:
                        st=st,
                        **kargs)
 
-    col1, col2 = st.columns(2)
-    
-    if col2.button('Recommend'):
-        imp.explore(1)
-        session_state.models = imp.models
-        st.experimental_rerun()
+    # col1, col2 = st.columns(2)
 
-    if col1.button('Impute'): 
+    # if col1.button('Impute'): 
+    if st.sidebar.button('Impute'):
 #        df_ho,hold_outs = do_holdout(df,5)
         imp.impute(10,inds=None,normalize=norm)
         if devie=='cpu':
@@ -208,7 +206,12 @@ if uploaded_file is not None:
         session_state.df = df0
         session_state.imputed_data = imputed_data
 #        session_state.imputed_data = reset_range(imputed_data,normin,normax)
-        
+
+    # if col2.button('Recommend'):
+    if st.sidebar.button('Recommend'):
+        imp.explore(1)
+        session_state.models = imp.models
+        st.experimental_rerun()        
         
 #        if regn=='None':
 #            pass
