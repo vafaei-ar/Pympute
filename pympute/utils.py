@@ -643,12 +643,12 @@ class Imputer:
 try:
     import cudf
     import cupy as cp
-    import tensorflow as tf
+    # import tensorflow as tf
 
     class GImputer(Imputer):
         def __init__(self,data_frame,model,loss_f=None,fill_method='random',save_history=False,batch_input=False,st=None):
-            assert tf.test.is_built_with_cuda(),'No installed GPU is found!'
-            print('Available physical devices are: ',tf.config.list_physical_devices())
+            # assert tf.test.is_built_with_cuda(),'No installed GPU is found!'
+            # print('Available physical devices are: ',tf.config.list_physical_devices())
 
             self.data_frame0 = data_frame.copy(deep=True)
             self.data_frame = data_frame
