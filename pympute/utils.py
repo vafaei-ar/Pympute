@@ -86,7 +86,7 @@ def gfill_random(df,batch_input=False):
         nmiss = int(df[col].isna().sum()) # cp.sum(fmiss)
         if batch_input and nmiss==0:
             continue
-        print(col,nmiss)
+        # print(col,nmiss)
         smiss = dd[col].dropna().sample(nmiss,replace=1).values
         dd.loc[fmiss,col] = smiss
     return dd
