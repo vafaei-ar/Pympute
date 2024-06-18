@@ -772,8 +772,9 @@ try:
                     if pred.ndim>1:
                         pred = pred[:,0]
 
-                    if pred.isna().sum()!=0:
-                        pred[pred.isna()] = 0
+                    nan_filt = np.isnan(pred)
+                    if nan_filt.sum()!=0:
+                        pred[nan_filt] = 0
                         print(f'Problem with this model! NaN outcomes!')
                         if self.st:
                             st.warning(f'Problem with this model! NaN outcomes!', icon="⚠️")
