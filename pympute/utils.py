@@ -381,9 +381,9 @@ class Imputer:
             model = self.model_class(**kargs)
             self.models[col] = model
 
-    def explore(self,n_try=5):
+    def explore(self,n_try=5,model_list=None):
         df = self.data_frame0.copy(deep=True)
-        self.models = explore(df,device=self.device,n_try=n_try,st=self.st)
+        self.models = explore(df,device=self.device,n_try=n_try,model_list=model_list,st=self.st)
 
     def impute(self,n_it,inds=None,normalize=True,trsh=-np.inf,**kargs):
         if inds is None:
@@ -823,24 +823,25 @@ def error_rate(x1,x2,eps=None):
     err = 100*np.abs(x1-x2)/(x1+eps)
     return np.mean(err)
 
-def explore(df0,device='cpu',n_try=5,st=None):
+def explore(df0,device='gpu',n_try=5,model_list=None,st=None):
     df = df0.copy(deep=1)
-    if device=='cpu':
-        # modelset = np.union1d(
-        #             [i.replace('-r','') for i in cpu_regressors_list().keys()],
-        #             [i.replace('-c','') for i in cpu_classifiers_list()] TO DO
-        #             )
-        modelset = [i.replace('-r','') for i in cpu_regressors_list().keys()]
-    elif device=='gpu':
-        # modelset = np.union1d(
-        #             [i.replace('-r','') for i in gpu_regressors_list().keys()],
-        #             [i.replace('-c','') for i in gpu_classifiers_list()] TO DO
-        #             )
-        modelset = [i.replace('-r','') for i in gpu_regressors_list().keys()]
-    else:
-        assert 0,'Device is not recognized!'
+    if model_list is None:
+        if device=='cpu':
+            # model_list = np.union1d(
+            #             [i.replace('-r','') for i in cpu_regressors_list().keys()],
+            #             [i.replace('-c','') for i in cpu_classifiers_list()] TO DO
+            #             )
+            model_list = [i.replace('-r','') for i in cpu_regressors_list().keys()]
+        elif device=='gpu':
+            # model_list = np.union1d(
+            #             [i.replace('-r','') for i in gpu_regressors_list().keys()],
+            #             [i.replace('-c','') for i in gpu_classifiers_list()] TO DO
+            #             )
+            model_list = [i.replace('-r','') for i in gpu_regressors_list().keys()]
+        else:
+            assert 0,'Device is not recognized!'
 
-    isreg = df.nunique()>1 # TODO: should be changed for classifiers
+    isreg = df.nunique()>5 # TODO: should be changed for classifiers
     nd = df.shape[0]
     cols = list(df.columns)
     assert nd>50 , 'The data is too small!'
@@ -857,7 +858,7 @@ def explore(df0,device='cpu',n_try=5,st=None):
         progress_bar = st.progress(0)
         status_text = st.empty()
         iprog = 0
-        nprog = n_try*len(modelset)
+        nprog = n_try*len(model_list)
         progress_bar.progress(iprog)
         status_text.text(f'Finding the best models using {device} ... {iprog:4.2f}% complete.')
         
@@ -868,19 +869,24 @@ def explore(df0,device='cpu',n_try=5,st=None):
         masked_ho,hold_outs = do_holdout(df,nho)
         df = set_range(df,normin,normax)
         missing_columns = [col for col in df.columns if df[col].isnull().sum() > 0]
-        for mdl in modelset:
+        for i_mdl,mdl in enumerate(model_list):
             if st:
                 iprog = iprog+1
                 progress_bar.progress(iprog/nprog)
-                status_text.text(f'Finding the best models using {device}, try {i_try}, model {mdl} ... {100*iprog/nprog:4.2f}% complete.')
+                status_text.text(f'Finding the best models using {device}, try {i_try}, model {mdl_name} ... {100*iprog/nprog:4.2f}% complete.')
             masked_hop = masked_ho.copy(deep=True)
-            models = {}
-            for col in missing_columns:
-                if isreg.loc[col]:
-                    ext = '-r'
-                else:
-                    ext = '-c'
-                models[col] = mdl+ext
+            if model_list is None:
+                models = {}
+                for col in missing_columns:
+                    if isreg.loc[col]:
+                        ext = '-r'
+                    else:
+                        ext = '-c'
+                    models[col] = mdl+ext
+                mdl_name = mdl
+            else:
+                models = mdl
+                mdl_name = str(i_mdl)
             if device=='cpu':
                 imp = Imputer(masked_hop,models,loss_f=None,fill_method='random',save_history=True)
                 imp.impute(n_iterate,inds=None)
@@ -891,7 +897,7 @@ def explore(df0,device='cpu',n_try=5,st=None):
             #     imp = Imputer(masked_hop,models,loss_f=None,fill_method='random',save_history=True,st=st)
             #     imp.impute(n_iterate,inds=None)
             # except Exception as e:
-            #     print(f'Something went wrong with {mdl}. {e}')
+            #     print(f'Something went wrong with {mdl_name}. {e}')
 
             if device=='gpu':
                 imp.to_cpu()
@@ -901,7 +907,7 @@ def explore(df0,device='cpu',n_try=5,st=None):
             imputed = reset_range(imputed,normin,normax)
 
             res = compare_holdout(imputed,hold_outs,error_rate)
-            dfcomp.loc[idf,'model'] = mdl+ext
+            dfcomp.loc[idf,'model'] = mdl_name #+ext
             dfcomp.loc[idf,'try'] = i_try
             for col in missing_columns:
                 dfcomp.loc[idf,col] = res[col]
