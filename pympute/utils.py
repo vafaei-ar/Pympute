@@ -384,6 +384,7 @@ class Imputer:
     def explore(self,n_try=5,model_list=None):
         df = self.data_frame0.copy(deep=True)
         self.models = explore(df,device=self.device,n_try=n_try,model_list=model_list,st=self.st)
+        return self.models
 
     def impute(self,n_it,inds=None,normalize=True,trsh=-np.inf,**kargs):
         if inds is None:
