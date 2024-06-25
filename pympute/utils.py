@@ -383,7 +383,7 @@ class Imputer:
 
     def explore(self,n_try=5,model_list=None):
         df = self.data_frame0.copy(deep=True)
-        self.models = explore(df,device=self.device,n_try=n_try,model_list=model_list,st=self.st)
+        self.models,self.dfcomp = explore(df,device=self.device,n_try=n_try,model_list=model_list,st=self.st)
         return self.models
 
     def impute(self,n_it,inds=None,normalize=True,trsh=-np.inf,**kargs):
@@ -922,7 +922,7 @@ def explore(df0,device='gpu',n_try=5,model_list=None,st=None):
         progress_bar.progress(100)
         progress_bar.empty()
         status_text.empty()
-    return best_models
+    return best_models,dfcomp
 
 def metric_opt(self,metric_f,truth):
     lsses = []
