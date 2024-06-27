@@ -872,11 +872,6 @@ def explore(df0,device='gpu',n_try=5,model_list=None,st=None):
         df = set_range(df,normin,normax)
         missing_columns = [col for col in df.columns if df[col].isnull().sum() > 0]
         for i_mdl,mdl in enumerate(model_list):
-            if st:
-                iprog = iprog+1
-                progress_bar.progress(iprog/nprog)
-                status_text.text(f'Finding the best models using {device}, try {i_try}, model {mdl_name} ... {100*iprog/nprog:4.2f}% complete.')
-            masked_hop = masked_ho.copy(deep=True)
             if model_list is None:
                 models = {}
                 for col in missing_columns:
@@ -889,6 +884,11 @@ def explore(df0,device='gpu',n_try=5,model_list=None,st=None):
             else:
                 models = mdl
                 mdl_name = str(i_mdl)
+            if st:
+                iprog = iprog+1
+                progress_bar.progress(iprog/nprog)
+                status_text.text(f'Finding the best models using {device}, try {i_try}, model {mdl_name} ... {100*iprog/nprog:4.2f}% complete.')
+            masked_hop = masked_ho.copy(deep=True)
             if device=='cpu':
                 imp = Imputer(masked_hop,models,loss_f=None,fill_method='random',save_history=True)
                 imp.impute(n_iterate,inds=None)
