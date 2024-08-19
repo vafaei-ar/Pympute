@@ -917,7 +917,10 @@ def explore(df0,device='gpu',n_try=5,model_list=None,st=None):
 
 #        print(dfcomp.loc[idf])
     # print(dfcomp.set_index(['model','try']).mean(level=0).apply(pd.to_numeric, errors='ignore').dtypes)
-    best_models = dfcomp.set_index(['model','try']).mean(level=0).apply(pd.to_numeric, errors='ignore').idxmin().to_dict()
+    try:
+        best_models = dfcomp.set_index(['model','try']).mean(level=0).apply(pd.to_numeric, errors='ignore').idxmin().to_dict()
+    except:
+        best_models = dfcomp.set_index(['model','try']).groupby(level=0).mean().apply(pd.to_numeric, errors='ignore').idxmin().to_dict()
     if st: 
         progress_bar.progress(100)
         progress_bar.empty()
