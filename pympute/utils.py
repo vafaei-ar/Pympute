@@ -732,8 +732,8 @@ try:
                     if fisna.mean()==0:
     #                     self.loss_frame.loc[ilf+i,col] = 0
                         newrow = cudf.DataFrame(index=[ilf+i],columns=[col],data=[0])
-                        self.loss_frame = self.loss_frame.append(newrow)
-
+                        # self.loss_frame = self.loss_frame.append(newrow)
+                        self.loss_frame = cudf.concat([self.loss_frame, newrow])
                         continue
 
                     if i>2:
@@ -741,7 +741,8 @@ try:
                         if c_loss<trsh:
     #                         self.loss_frame.loc[ilf+i,col] = c_loss
                             newrow = cudf.DataFrame(index=[ilf+i],columns=[col],data=[c_loss])
-                            self.loss_frame = self.loss_frame.append(newrow)
+                            # self.loss_frame = self.loss_frame.append(newrow)
+                            self.loss_frame = cudf.concat([self.loss_frame, newrow])
                             continue
 
                     x = self.data_frame.drop(columns=[col])
@@ -794,7 +795,8 @@ try:
                 clses = cp.stack(clses)
                 clses = clses.reshape(1,-1)
                 newrow = cudf.DataFrame(index=[ilf+i],columns=self.imp_cols,data=clses) #self.cols[inds]
-                self.loss_frame = self.loss_frame.append(newrow)
+                # self.loss_frame = self.loss_frame.append(newrow)
+                self.loss_frame = cudf.concat([self.loss_frame, newrow])
             pbar.close()
             if self.st:
                 progress_bar.progress(100)
