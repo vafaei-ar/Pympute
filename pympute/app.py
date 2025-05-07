@@ -211,7 +211,7 @@ if uploaded_file is not None:
     if st.sidebar.button('Recommend'):
         imp.explore(1)
         session_state.models = imp.models
-        st.experimental_rerun()        
+        st.rerun()        
         
 #        if regn=='None':
 #            pass
