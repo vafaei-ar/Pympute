@@ -115,7 +115,7 @@ from pympute import *
 from pathlib import Path
 
 from shutil import which
-if which('nvidia-smi') is None:
+if which('nvidia-smi') is None or 1:
     devie = 'cpu'
     msg.toast('Seems like the GPU is on a break. CPU to the rescue!', icon='🐌')
 else:
@@ -266,7 +266,7 @@ if hasattr(session_state,'done'):
     st.success('Done!')
     col1, col2 = st.columns(2)
     col1.write('original data')
-    col1.write(df.iloc[inds].style.highlight_null(null_color='red'))
+    col1.write(df.iloc[inds].style.background_gradient(cmap='Reds', vmin=0, vmax=1))
     col2.write('imputed data')
     col2.write(dfi.iloc[inds].style.apply(lambda x: df.iloc[inds].applymap(color_cells), axis=None))
     col2.markdown(get_table_download_link_csv(dfi,

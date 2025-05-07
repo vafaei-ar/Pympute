@@ -700,7 +700,7 @@ try:
             else:
                 self.models = {col:None for col in self.imp_cols}
 
-        def impute(self,n_it,inds=None,trsh=-np.inf,**kargs):
+        def impute(self,n_it,inds=None,normalize=True,trsh=-np.inf,**kargs):
             if inds is None:
                 inds = np.arange(self.imp_ncol)
                 np.random.shuffle(inds)
@@ -708,6 +708,11 @@ try:
             self.to_gpu()
 
             ilf = self.loss_frame.shape[0]
+            if normalize:
+                self.data_frame = self.data_frame.to_pandas()
+                normin,normax = get_range(self.data_frame)
+                self.data_frame = set_range(self.data_frame,normin,normax)
+                self.data_frame = cudf.from_pandas(self.data_frame)
 
             nprog = n_it*len(inds)
             pbar = tqdm(total=nprog, position=0, leave=True)
@@ -884,8 +889,8 @@ def explore(df0,device='gpu',n_try=5,model_list=None,st=None):
                     models[col] = mdl+ext
                 mdl_name = mdl
             else:
-                models = mdl
-                mdl_name = str(i_mdl)
+                models = mdl+'-r'
+                mdl_name = mdl #str(i_mdl)
             if st:
                 iprog = iprog+1
                 progress_bar.progress(iprog/nprog)
