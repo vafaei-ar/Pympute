@@ -1,43 +1,79 @@
-python-imputation
-=======
+# Pympute
 
-## **This is an under development repository!**
+<p align="center">
+ <img src="./pympute/media/logo.png" width="800" alt="Pympute Logo"/>
+</p>
 
+A powerful Python package for data imputation, designed to handle missing values in scientific datasets efficiently and accurately.
 
-To
+## Features
 
+- Advanced imputation algorithms
+- User-friendly GUI interface
+- Support for various data formats
+- Interactive Jupyter notebook integration
+- Google Colab compatibility
 
+## Installation
 
-<!--### To run the app-->
-<!--You need to change your current directory to the __app__ and run:-->
-<!--```-->
-<!--$ streamlit run app.py-->
-<!--```-->
+### Local Installation (Recommended)
 
-<!--### The final clean notebook:-->
-<!--You can fnid the course program and the videos [HERE](https://github.com/TheDecodeLab/python-imputation/blob/main/imputation_clean.ipynb).-->
+We recommend using Anaconda for local installation:
 
+```bash
+# Clone the repository
+git clone https://github.com/TheDecodeLab/python-imputation.git
+cd python-imputation
 
-<!--- [Clean notebook](https://github.com/TheDecodeLab/python-imputation/blob/main/imputation_clean.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/TheDecodeLab/python-imputation/blob/main/imputation_clean.ipynb)-->
+# Create and activate conda environment
+conda env create -f environment.yml
+conda activate impute
 
+# Install the package
+python setup.py install
 
-<!--This is supposed to include all of the scropts we have so far for the imputation project with Python. -->
-
-**Installation:**
-
-It is recomended to use anaconda.
+# Run the application
+pympute 8501
 ```
-$ git clone https://github.com/TheDecodeLab/python-imputation.git
-```
-The package is tested on [**Anaconda**](https://www.anaconda.com/download/#linux). You need to have the packages listed in requirements.txt (will be prepared) or you can install them using:
-```
-$ conda env create -f environment_impute.yml
+
+### Google Colab Installation
+
+For a quick start with the GUI interface, you can use Google Colab:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/TheDecodeLab/python-imputation/blob/master/notebooks/pympute.ipynb)
+
+**Recommended:** To run on Google Colab and use teh GUI you can use the following link:
+- [Ahunt_app.ipynb](https://github.com/TheDecodeLab/python-imputation/blob/master/notebooks/pympute.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/TheDecodeLab/python-imputation/blob/master/notebooks/pympute.ipynb)
+
+
+## Usage
+
+Detailed usage instructions and examples can be found in the [notebooks](notebooks/) directory.
+
+## Citation
+
+If you use Pympute in your research, please cite our work:
+
+```bibtex
+@article{pympute,
+    title={Pympute: A Python Package for Data Imputation},
+    author={Vafaei Sadr, Alireza},
+    journal={},
+    year={},
+    publisher={}
+}
 ```
 
-**python-imputation** is an imputation package. 
+## Contributing
 
-<!--<p align="center">-->
-<!--  <img src="./images/ds9flow.jpg" width="800"/>-->
-<!--</p>-->
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For questions and support, please open an issue on GitHub or contact the maintainers.
 
 
