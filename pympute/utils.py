@@ -836,21 +836,17 @@ def explore(df0,device='gpu',n_try=5,model_list=None,st=None):
     df = df0.copy(deep=1)
     if model_list is None:
         if device=='cpu':
-            # model_list = np.union1d(
-            #             [i.replace('-r','') for i in cpu_regressors_list().keys()],
-            #             [i.replace('-c','') for i in cpu_classifiers_list()] TO DO
-            #             )
-            model_list = [i.replace('-r','') for i in cpu_regressors_list().keys()]
+            base_regressors = {i.replace('-r','') for i in cpu_regressors_list().keys()}
+            base_classifiers = {i.replace('-c','') for i in cpu_classifiers_list().keys()}
+            model_list = sorted(list(base_regressors.union(base_classifiers)))
         elif device=='gpu':
-            # model_list = np.union1d(
-            #             [i.replace('-r','') for i in gpu_regressors_list().keys()],
-            #             [i.replace('-c','') for i in gpu_classifiers_list()] TO DO
-            #             )
-            model_list = [i.replace('-r','') for i in gpu_regressors_list().keys()]
+            base_regressors = {i.replace('-r','') for i in gpu_regressors_list().keys()}
+            base_classifiers = {i.replace('-c','') for i in gpu_classifiers_list().keys()}
+            model_list = sorted(list(base_regressors.union(base_classifiers)))
         else:
             assert 0,'Device is not recognized!'
 
-    isreg = df.nunique()>5 # TODO: should be changed for classifiers
+    isreg = df.nunique()>10 
     nd = df.shape[0]
     cols = list(df.columns)
     assert nd>50 , 'The data is too small!'
@@ -879,31 +875,38 @@ def explore(df0,device='gpu',n_try=5,model_list=None,st=None):
         df = set_range(df,normin,normax)
         missing_columns = [col for col in df.columns if df[col].isnull().sum() > 0]
         for i_mdl,mdl in enumerate(model_list):
-            if model_list is None:
-                models = {}
-                for col in missing_columns:
-                    if isreg.loc[col]:
-                        ext = '-r'
-                    else:
-                        ext = '-c'
-                    models[col] = mdl+ext
-                mdl_name = mdl
-            else:
-                models = mdl+'-r'
-                mdl_name = mdl #str(i_mdl)
+            models_for_imputer = {}
+            for col_name_iterator in missing_columns:
+                if isreg.loc[col_name_iterator]:
+                    models_for_imputer[col_name_iterator] = mdl + '-r'
+                else:
+                    models_for_imputer[col_name_iterator] = mdl + '-c'
+            
+            # If models_for_imputer is empty (e.g. no missing_columns or no valid model variants),
+            # handle it to prevent errors with Imputer.
+            # The Imputer class: `self.imp_cols = list(model.keys())` if model is dict.
+            # If model is an empty dict, imp_cols is empty, imp_ncol = 0. This should be fine.
+            # No explicit 'if not models_for_imputer: continue' needed based on Imputer behavior.
+            # Let Imputer handle empty dict if missing_columns is empty.
+
+            mdl_name = mdl # Base model name for reporting
+            
             if st:
                 iprog = iprog+1
                 progress_bar.progress(iprog/nprog)
                 status_text.text(f'Finding the best models using {device}, try {i_try}, model {mdl_name} ... {100*iprog/nprog:4.2f}% complete.')
-            masked_hop = masked_ho.copy(deep=True)
+            
+            masked_hop_copy = masked_ho.copy(deep=True) 
+            
+            # models_for_imputer IS the 'models' argument for Imputer now
             if device=='cpu':
-                imp = Imputer(masked_hop,models,loss_f=None,fill_method='random',save_history=True)
-                imp.impute(n_iterate,inds=None)
+                imp = Imputer(masked_hop_copy, models_for_imputer, loss_f=None, fill_method='random', save_history=True)
+                imp.impute(n_iterate, inds=None)
             else:
-                imp = GImputer(masked_hop,models,loss_f=None,fill_method='random',save_history=True)
-                imp.impute(n_iterate,inds=None)
+                imp = GImputer(masked_hop_copy, models_for_imputer, loss_f=None, fill_method='random', save_history=True)
+                imp.impute(n_iterate, inds=None)
             # try:
-            #     imp = Imputer(masked_hop,models,loss_f=None,fill_method='random',save_history=True,st=st)
+            #     imp = Imputer(masked_hop_copy, models_for_imputer,loss_f=None,fill_method='random',save_history=True,st=st)
             #     imp.impute(n_iterate,inds=None)
             # except Exception as e:
             #     print(f'Something went wrong with {mdl_name}. {e}')
@@ -916,10 +919,16 @@ def explore(df0,device='gpu',n_try=5,model_list=None,st=None):
             imputed = reset_range(imputed,normin,normax)
 
             res = compare_holdout(imputed,hold_outs,error_rate)
-            dfcomp.loc[idf,'model'] = mdl_name #+ext
+            dfcomp.loc[idf,'model'] = mdl_name 
             dfcomp.loc[idf,'try'] = i_try
-            for col in missing_columns:
-                dfcomp.loc[idf,col] = res[col]
+            # Iterate over original missing_columns for dfcomp
+            for col_dfcomp in missing_columns: 
+                # res might not contain all cols if some were skipped (e.g. no valid variant for a column)
+                # or if compare_holdout doesn't return for all.
+                if col_dfcomp in res: 
+                    dfcomp.loc[idf,col_dfcomp] = res[col_dfcomp]
+                else:
+                    dfcomp.loc[idf,col_dfcomp] = np.nan 
             idf = idf+1
 
 #        print(dfcomp.loc[idf])
